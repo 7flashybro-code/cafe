@@ -6,79 +6,384 @@
   <title>MenuAR</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: sans-serif; overflow: hidden; width: 100vw; height: 100vh; }
 
-    #door-scene {
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+    body {
+      font-family: sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      background: #1a0800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* MOBILE FRAME */
+    #scene {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
       overflow: hidden;
     }
-    .bg-image {
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-    }
-    .doors-container {
+
+    /* SUNSET SKY */
+    .sky {
       position: absolute;
-      bottom: 20%; left: 50%;
-      transform: translateX(-50%);
-      width: 36%; height: 44%;
-      display: flex; overflow: hidden;
+      top: 0; left: 0;
+      width: 100%; height: 42%;
+      background: linear-gradient(
+        180deg,
+        #1a1040 0%,
+        #4a2060 20%,
+        #8B3A6A 40%,
+        #D4603A 65%,
+        #F0903A 80%,
+        #F5B842 100%
+      );
+    }
+
+    /* SUNSET CLOUDS */
+    .cloud {
+      position: absolute;
+      border-radius: 50px;
+      opacity: 0.35;
+    }
+    .c1 {
+      top: 6%; left: 5%;
+      width: 90px; height: 18px;
+      background: #FFD080;
+    }
+    .c2 {
+      top: 10%; right: 8%;
+      width: 70px; height: 14px;
+      background: #FFB060;
+    }
+    .c3 {
+      top: 16%; left: 20%;
+      width: 110px; height: 16px;
+      background: #FF9060;
+    }
+
+    /* STREET / FOOTPATH */
+    .street {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 10%;
+      background: linear-gradient(180deg, #4a4a4a, #333);
+    }
+    .footpath {
+      position: absolute;
+      bottom: 10%; left: 0;
+      width: 100%; height: 6%;
+      background: repeating-linear-gradient(
+        90deg,
+        #888 0px, #888 28px,
+        #777 28px, #777 30px
+      );
+    }
+
+    /* BRICK WALLS */
+    .wall {
+      position: absolute;
+      bottom: 16%; 
+      width: 20%;
+      height: 76%;
+      background-color: #8B3A2A;
+      background-image:
+        repeating-linear-gradient(
+          transparent, transparent 14px,
+          rgba(0,0,0,0.2) 14px, rgba(0,0,0,0.2) 16px
+        ),
+        repeating-linear-gradient(
+          90deg, transparent, transparent 28px,
+          rgba(0,0,0,0.12) 28px, rgba(0,0,0,0.12) 30px
+        );
+    }
+    .wall-left { left: 0; }
+    .wall-right { right: 0; }
+
+    /* WALL SHADOW */
+    .wall-left::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 12px; height: 100%;
+      background: linear-gradient(to right, transparent, rgba(0,0,0,0.3));
+    }
+    .wall-right::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 12px; height: 100%;
+      background: linear-gradient(to left, transparent, rgba(0,0,0,0.3));
+    }
+
+    /* IVY ON WALLS */
+    .ivy {
+      position: absolute;
+      font-size: 16px;
+      line-height: 1.6;
+      top: 8%;
+    }
+    .ivy-left { left: 2%; }
+    .ivy-right { right: 2%; text-align: right; }
+
+    /* CAFE FACADE */
+    .facade {
+      position: absolute;
+      bottom: 16%;
+      left: 20%; right: 20%;
+      height: 76%;
+      background: #2D5A3D;
+      box-shadow: inset -4px 0 12px rgba(0,0,0,0.3), inset 4px 0 12px rgba(0,0,0,0.3);
+    }
+
+    /* AWNING */
+    .awning-wrap {
+      position: absolute;
+      top: -10px; left: -8%; width: 116%;
+      z-index: 10;
+    }
+    .awning {
+      width: 100%; height: 56px;
+      background: repeating-linear-gradient(
+        90deg,
+        #2D5A3D 0px, #2D5A3D 18px,
+        #EDE8D8 18px, #EDE8D8 36px
+      );
+      clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .awning-ridge {
+      width: 92%; margin: 0 auto;
+      height: 6px;
+      background: #1E3D2A;
+      margin-top: -2px;
+    }
+    .awning-fringe {
+      display: flex;
+      justify-content: space-around;
+      padding: 0 6%;
+      margin-top: 0;
+    }
+    .fringe {
+      width: 14px; height: 12px;
+      background: #EDE8D8;
+      border-radius: 0 0 50% 50%;
+    }
+
+    /* LANTERNS */
+    .lantern {
+      position: absolute;
+      top: 16%;
       z-index: 5;
     }
-    .door-left-panel {
-      width: 50%; height: 100%;
-      background: linear-gradient(135deg, #8B5E3C, #6B3A1F);
-      transform-origin: left center;
-      transition: transform 2s cubic-bezier(0.4,0,0.2,1);
+    .lantern-left { left: 6%; }
+    .lantern-right { right: 6%; }
+    .lantern-pole {
+      width: 2px; height: 18px;
+      background: #777;
+      margin: 0 auto;
     }
-    .door-right-panel {
-      width: 50%; height: 100%;
-      background: linear-gradient(225deg, #8B5E3C, #6B3A1F);
-      transform-origin: right center;
-      transition: transform 2s cubic-bezier(0.4,0,0.2,1);
+    .lantern-body {
+      width: 14px; height: 22px;
+      background: linear-gradient(180deg, #C9A84C, #F0C060, #C9A84C);
+      border-radius: 3px;
+      margin: 0 auto;
+      box-shadow: 0 0 12px rgba(255,180,60,0.9), 0 0 28px rgba(255,160,40,0.5);
+      position: relative;
     }
-    .door-left-panel.open { transform: translateX(-100%); }
-    .door-right-panel.open { transform: translateX(100%); }
-    .glow-inside {
+    .lantern-body::before {
+      content: '';
+      position: absolute; top: -4px; left: -3px;
+      width: 20px; height: 5px;
+      background: #A07830;
+      border-radius: 2px;
+    }
+    .lantern-body::after {
+      content: '';
+      position: absolute; bottom: -4px; left: -3px;
+      width: 20px; height: 5px;
+      background: #A07830;
+      border-radius: 2px;
+    }
+
+    /* CAFE SIGN */
+    .sign {
       position: absolute;
-      bottom: 20%; left: 50%;
+      top: 14%; left: 50%;
       transform: translateX(-50%);
-      width: 36%; height: 44%;
-      background: radial-gradient(ellipse at center, rgba(255,180,80,0.95) 0%, rgba(255,140,50,0.6) 40%, transparent 70%);
-      opacity: 0; transition: opacity 1s ease;
-      pointer-events: none; z-index: 4;
-    }
-    .glow-inside.show { opacity: 1; }
-    .cafe-name-overlay {
-      position: absolute;
-      top: 10%; left: 50%;
-      transform: translateX(-50%);
+      background: #2A1A0E;
+      border: 1.5px solid #C9A84C;
+      border-radius: 3px;
+      padding: 4px 12px;
       font-family: 'Georgia', serif;
-      font-size: 26px; font-weight: bold;
+      font-size: 11px;
       color: #C9A84C;
-      text-shadow: 0 0 15px rgba(201,168,76,0.9);
-      letter-spacing: 4px; z-index: 10;
+      letter-spacing: 2px;
       white-space: nowrap;
+      box-shadow: 0 0 8px rgba(201,168,76,0.35);
+      z-index: 5;
     }
-    .enter-btn {
+
+    /* WINDOWS */
+    .windows {
+      position: absolute;
+      top: 26%; left: 5%; right: 5%;
+      display: flex;
+      gap: 6%;
+      justify-content: center;
+    }
+    .window {
+      flex: 1;
+      padding-top: 36%;
+      background: linear-gradient(135deg, #FFE0A0, #FFA030, #FFB84A);
+      border: 3px solid #4A2A10;
+      border-radius: 1px;
+      position: relative;
+      box-shadow:
+        0 0 18px rgba(255,150,40,0.7),
+        inset 0 0 12px rgba(255,200,80,0.3);
+      overflow: hidden;
+    }
+    .window::before {
+      content: '';
+      position: absolute; top: 50%; left: 0;
+      width: 100%; height: 2px;
+      background: #4A2A10;
+    }
+    .window::after {
+      content: '';
+      position: absolute; top: 0; left: 50%;
+      width: 2px; height: 100%;
+      background: #4A2A10;
+    }
+    /* Silhouette people in window */
+    .window-shadow {
       position: absolute;
       bottom: 8%; left: 50%;
       transform: translateX(-50%);
-      background: rgba(201,168,76,0.15);
+      font-size: 16px;
+      filter: brightness(0);
+      opacity: 0.4;
+    }
+
+    /* DOOR FRAME */
+    .door-frame {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 54%; height: 50%;
+      border: 4px solid #4A2A10;
+      border-bottom: none;
+      border-radius: 2px 2px 0 0;
+      overflow: hidden;
+      display: flex;
+      z-index: 3;
+    }
+
+    /* DOOR GLOW */
+    .door-glow {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255,190,80,1) 0%,
+        rgba(255,130,30,0.8) 35%,
+        rgba(200,80,10,0.3) 65%,
+        transparent 85%
+      );
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      z-index: 0;
+    }
+    .door-glow.show { opacity: 1; }
+
+    /* DOORS */
+    .door {
+      width: 50%; height: 100%;
+      position: relative; z-index: 1;
+      transition: transform 2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .door-left-panel {
+      background: linear-gradient(160deg, #9A6840, #5A2E10, #7A4820);
+      transform-origin: left center;
+      border-right: 1.5px solid #2A1008;
+    }
+    .door-right-panel {
+      background: linear-gradient(200deg, #9A6840, #5A2E10, #7A4820);
+      transform-origin: right center;
+      border-left: 1.5px solid #2A1008;
+    }
+    .door-left-panel.open { transform: translateX(-100%); }
+    .door-right-panel.open { transform: translateX(100%); }
+
+    /* DOOR PANEL DETAILS */
+    .dp {
+      position: absolute;
+      border: 1px solid rgba(255,200,120,0.15);
+      border-radius: 2px;
+      background: rgba(0,0,0,0.08);
+    }
+    .dp1 { top: 6%; left: 10%; right: 10%; height: 28%; }
+    .dp2 { top: 40%; left: 10%; right: 10%; height: 28%; }
+    .dp3 { top: 74%; left: 10%; right: 10%; height: 18%; }
+
+    .handle {
+      position: absolute; top: 47%;
+      width: 5px; height: 20px;
+      background: linear-gradient(180deg, #E0C060, #C9A84C, #A08030);
+      border-radius: 3px;
+      box-shadow: 0 0 5px rgba(201,168,76,0.5);
+    }
+    .handle-l { right: 7%; }
+    .handle-r { left: 7%; }
+
+    /* PLANTS */
+    .plant {
+      position: absolute;
+      bottom: 0; font-size: 32px;
+      z-index: 4; line-height: 1;
+    }
+    .plant-left { left: 4%; }
+    .plant-right { right: 4%; }
+
+    /* CAFE NAME TOP */
+    .cafe-name {
+      position: absolute;
+      top: 3%; left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Georgia', serif;
+      font-size: 24px; font-weight: bold;
+      color: #C9A84C;
+      text-shadow: 0 0 20px rgba(201,168,76,0.9), 0 2px 4px rgba(0,0,0,0.8);
+      letter-spacing: 6px;
+      white-space: nowrap;
+      z-index: 20;
+    }
+
+    /* ENTER BUTTON */
+    .enter-btn {
+      position: absolute;
+      bottom: 20%; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(201,168,76,0.1);
       border: 2px solid #C9A84C;
       color: #C9A84C;
-      padding: 12px 36px;
-      font-size: 14px; font-weight: 600;
-      letter-spacing: 3px; border-radius: 4px;
-      cursor: pointer; z-index: 20;
+      padding: 10px 32px;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 4px;
+      border-radius: 3px;
+      cursor: pointer;
+      z-index: 30;
       animation: pulse-enter 2s ease-in-out infinite;
+      white-space: nowrap;
     }
     @keyframes pulse-enter {
-      0%,100% { box-shadow: 0 0 10px rgba(201,168,76,0.3); }
-      50% { box-shadow: 0 0 25px rgba(201,168,76,0.8); }
+      0%,100% { box-shadow: 0 0 8px rgba(201,168,76,0.3); }
+      50% { box-shadow: 0 0 22px rgba(201,168,76,0.8); }
     }
+
+    /* FADE OVERLAY */
     #fade-overlay {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
@@ -87,10 +392,12 @@
       transition: opacity 0.8s ease;
     }
     #fade-overlay.fade { opacity: 1; }
+
+    /* WELCOME SCREEN */
     #welcome-screen {
       position: fixed; top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: #1a0a00;
+      background: #1a0800;
       display: none; z-index: 1;
       align-items: center; justify-content: center;
       flex-direction: column; gap: 16px;
@@ -99,12 +406,12 @@
     #welcome-screen h1 {
       font-family: 'Georgia', serif;
       color: #C9A84C; font-size: 32px;
-      letter-spacing: 6px;
-      text-shadow: 0 0 20px rgba(201,168,76,0.8);
+      letter-spacing: 8px;
+      text-shadow: 0 0 25px rgba(201,168,76,0.8);
     }
     #welcome-screen p {
-      color: rgba(255,255,255,0.6);
-      font-size: 14px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.5);
+      font-size: 12px; letter-spacing: 3px;
     }
   </style>
 </head>
@@ -112,17 +419,94 @@
 
 <div id="fade-overlay"></div>
 
-<div id="door-scene">
-  <img class="bg-image" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/newdoor.png" alt="Cafe">
-  <div class="glow-inside" id="glow"></div>
-  <div class="doors-container">
-    <div class="door-left-panel" id="door-left"></div>
-    <div class="door-right-panel" id="door-right"></div>
+<div id="scene">
+  <!-- SKY -->
+  <div class="sky">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
   </div>
-  <div class="cafe-name-overlay">✦ XYZ ✦</div>
+
+  <!-- BRICK WALLS -->
+  <div class="wall wall-left">
+    <div class="ivy ivy-left">🌿🌿<br>🌿🌿<br>🌿🌿<br>🌿</div>
+  </div>
+  <div class="wall wall-right">
+    <div class="ivy ivy-right">🌿🌿<br>🌿🌿<br>🌿🌿<br>🌿</div>
+  </div>
+
+  <!-- FACADE -->
+  <div class="facade">
+    <!-- AWNING -->
+    <div class="awning-wrap">
+      <div class="awning"></div>
+      <div class="awning-ridge"></div>
+      <div class="awning-fringe">
+        <div class="fringe"></div><div class="fringe"></div>
+        <div class="fringe"></div><div class="fringe"></div>
+        <div class="fringe"></div><div class="fringe"></div>
+        <div class="fringe"></div><div class="fringe"></div>
+        <div class="fringe"></div>
+      </div>
+    </div>
+
+    <!-- LANTERNS -->
+    <div class="lantern lantern-left">
+      <div class="lantern-pole"></div>
+      <div class="lantern-body"></div>
+    </div>
+    <div class="lantern lantern-right">
+      <div class="lantern-pole"></div>
+      <div class="lantern-body"></div>
+    </div>
+
+    <!-- SIGN -->
+    <div class="sign">☕ XYZ CAFE ☕</div>
+
+    <!-- WINDOWS -->
+    <div class="windows">
+      <div class="window">
+        <div class="window-shadow">👤👤</div>
+      </div>
+      <div class="window">
+        <div class="window-shadow">👤</div>
+      </div>
+    </div>
+
+    <!-- DOOR -->
+    <div class="door-frame">
+      <div class="door-glow" id="glow"></div>
+      <div class="door door-left-panel" id="door-left">
+        <div class="dp dp1"></div>
+        <div class="dp dp2"></div>
+        <div class="dp dp3"></div>
+        <div class="handle handle-l"></div>
+      </div>
+      <div class="door door-right-panel" id="door-right">
+        <div class="dp dp1"></div>
+        <div class="dp dp2"></div>
+        <div class="dp dp3"></div>
+        <div class="handle handle-r"></div>
+      </div>
+    </div>
+
+    <!-- PLANTS -->
+    <div class="plant plant-left">🪴</div>
+    <div class="plant plant-right">🪴</div>
+  </div>
+
+  <!-- FOOTPATH & STREET -->
+  <div class="footpath"></div>
+  <div class="street"></div>
+
+  <!-- CAFE NAME -->
+  <div class="cafe-name">✦ XYZ ✦</div>
+
+  <!-- ENTER BUTTON -->
   <button class="enter-btn" onclick="startAnimation()">ENTER</button>
 </div>
 
+<!-- WELCOME SCREEN -->
 <div id="welcome-screen">
   <h1>✦ XYZ ✦</h1>
   <p>WELCOME TO OUR MENU</p>
@@ -135,15 +519,15 @@ function startAnimation() {
   setTimeout(() => {
     document.getElementById('door-left').classList.add('open');
     document.getElementById('door-right').classList.add('open');
-  }, 600);
+  }, 700);
   setTimeout(() => {
     document.getElementById('fade-overlay').classList.add('fade');
-  }, 2800);
+  }, 2900);
   setTimeout(() => {
-    document.getElementById('door-scene').style.display = 'none';
+    document.getElementById('scene').style.display = 'none';
     document.getElementById('welcome-screen').classList.add('show');
     document.getElementById('fade-overlay').classList.remove('fade');
-  }, 3600);
+  }, 3700);
 }
 </script>
 </body>
