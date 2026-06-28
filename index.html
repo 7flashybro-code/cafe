@@ -210,6 +210,11 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .chalk-item.animate { animation: chalk-appear 0.5s ease forwards; }
+    .chalk-writing { display: inline-block; position: relative; }
+.chalk-cursor { display: inline-block; width: 2px; height: 16px; background: rgba(255,255,255,0.8); margin-left: 2px; vertical-align: middle; animation: blink-cursor 0.5s ease infinite; }
+@keyframes blink-cursor { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.chalk-dust { position: fixed; pointer-events: none; border-radius: 50%; background: rgba(255,255,255,0.6); animation: dust-fade 0.6s ease forwards; z-index: 999; }
+@keyframes dust-fade { 0% { opacity: 0.8; transform: scale(1) translate(0,0); } 100% { opacity: 0; transform: scale(0.3) translate(var(--dx), var(--dy)); } }
 
     /* POPUP */
     #order-popup {
@@ -429,6 +434,41 @@ function startBookAnimation() {
   }, 1000 + (categories.length * 400) + 600);
 }
 
+function typeWriter(element, text, speed, callback) {
+  let i = 0;
+  element.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className = 'chalk-cursor';
+  element.appendChild(cursor);
+  function type() {
+    if (i < text.length) {
+      const char = document.createTextNode(text.charAt(i));
+      element.insertBefore(char, cursor);
+      spawnDust(element);
+      i++;
+      setTimeout(type, speed);
+    } else {
+      cursor.remove();
+      if (callback) callback();
+    }
+  }
+  type();
+}
+
+function spawnDust(element) {
+  const rect = element.getBoundingClientRect();
+  for (let d = 0; d < 3; d++) {
+    const dust = document.createElement('div');
+    dust.className = 'chalk-dust';
+    const size = Math.random() * 4 + 1;
+    const dx = (Math.random() - 0.5) * 20 + 'px';
+    const dy = (Math.random() - 0.5) * 20 + 'px';
+    dust.style.cssText = `width:${size}px;height:${size}px;left:${rect.right + Math.random()*10}px;top:${rect.top + Math.random()*rect.height}px;--dx:${dx};--dy:${dy};`;
+    document.body.appendChild(dust);
+    setTimeout(() => dust.remove(), 600);
+  }
+}
+
 function openChalkboard(catName, catEmoji) {
   const surface = document.getElementById('chalk-surface');
   surface.innerHTML = `
@@ -441,21 +481,32 @@ function openChalkboard(catName, catEmoji) {
   menuItems.forEach((item, i) => {
     const el = document.createElement('div');
     el.className = 'chalk-item';
+    el.id = `chalk-item-${i}`;
     el.innerHTML = `
       <div class="chalk-item-header">
         <div class="chalk-item-name">
           <span class="chalk-item-emoji">${item.emoji}</span>
-          ${item.name}
+          <span class="chalk-writing" id="chalk-name-${i}"></span>
         </div>
-        <div class="chalk-price-tag">₹${item.price}</div>
+        <div class="chalk-price-tag" id="chalk-price-${i}" style="opacity:0">₹${item.price}</div>
       </div>
-      <div class="chalk-item-desc">${item.desc}</div>
-      <button class="chalk-order-btn" onclick="placeOrder('${item.name}', ${item.price})">ORDER THIS</button>
+      <div class="chalk-item-desc" id="chalk-desc-${i}" style="opacity:0">${item.desc}</div>
+      <button class="chalk-order-btn" id="chalk-btn-${i}" style="opacity:0" onclick="placeOrder('${item.name}', ${item.price})">ORDER THIS</button>
     `;
     surface.appendChild(el);
     setTimeout(() => {
       el.classList.add('animate');
-    }, 300 + (i * 150));
+      const nameEl = document.getElementById(`chalk-name-${i}`);
+      typeWriter(nameEl, item.name, 40, () => {
+        document.getElementById(`chalk-price-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+        setTimeout(() => {
+          document.getElementById(`chalk-desc-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+          setTimeout(() => {
+            document.getElementById(`chalk-btn-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+          }, 200);
+        }, 200);
+      });
+    }, 300 + (i * 800));
   });
   document.getElementById('chalkboard-screen').classList.add('show');
 }
