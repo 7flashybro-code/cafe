@@ -77,17 +77,10 @@
 .frame-dust { position: fixed; pointer-events: none; background: rgba(180,120,60,0.7); border-radius: 50%; animation: frame-dust-fall 0.8s ease forwards; z-index: 999; }
 @keyframes frame-dust-fall { 0% { opacity: 0.8; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(40px) scale(0.3); } }
 
-/* KNOCK HINT */
-.knock-hint { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); color: rgba(201,168,76,0.8); font-size: 12px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; animation: pulse-enter 2s ease-in-out infinite; }
-.knock-counter { position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%); color: #C9A84C; font-size: 18px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; display: none; }
 
-/* DOOR SHAKE */
-@keyframes door-knock { 0% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } 100% { transform: translateX(0); } }
-.door-knocking { animation: door-knock 0.3s ease; }
 
-/* FRAME DUST */
-.frame-dust { position: fixed; pointer-events: none; background: rgba(180,120,60,0.7); border-radius: 50%; animation: frame-dust-fall 0.8s ease forwards; z-index: 999; }
-@keyframes frame-dust-fall { 0% { opacity: 0.8; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(40px) scale(0.3); } }
+
+
 
     /* ===== FADE ===== */
     #fade-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; opacity: 0; z-index: 500; pointer-events: none; transition: opacity 0.6s ease; }
@@ -502,22 +495,7 @@ function startDoorAnimation() {
     setTimeout(startBookAnimation, 600);
   }, 2800);
 }
-  setTimeout(() => {
-    document.getElementById('door-left').classList.add('open');
-    document.getElementById('door-right').classList.add('open');
-  }, 300);
-  setTimeout(() => {
-    document.getElementById('fade-overlay').style.transition = 'opacity 0.5s ease';
-    document.getElementById('fade-overlay').classList.add('fade');
-  }, 2200);
-  setTimeout(() => {
-    document.getElementById('exterior').style.display = 'none';
-    document.getElementById('interior-screen').classList.add('show');
-    document.getElementById('fade-overlay').classList.remove('fade');
-    buildPages();
-    setTimeout(startBookAnimation, 600);
-  }, 2800);
-}
+ 
 
 function startBookAnimation() {
   const bookContainer = document.getElementById('book-container');
