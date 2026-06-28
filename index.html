@@ -62,8 +62,32 @@
     .plant-left { left: 4%; }
     .plant-right { right: 4%; }
     .cafe-name { position: absolute; top: 3%; left: 50%; transform: translateX(-50%); font-family: 'Georgia', serif; font-size: 24px; font-weight: bold; color: #C9A84C; text-shadow: 0 0 20px rgba(201,168,76,0.9); letter-spacing: 6px; white-space: nowrap; z-index: 20; }
-    .enter-btn { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); background: rgba(201,168,76,0.1); border: 2px solid #C9A84C; color: #C9A84C; padding: 10px 32px; font-size: 12px; font-weight: 700; letter-spacing: 4px; border-radius: 3px; cursor: pointer; z-index: 30; animation: pulse-enter 2s ease-in-out infinite; white-space: nowrap; }
-    @keyframes pulse-enter { 0%,100% { box-shadow: 0 0 8px rgba(201,168,76,0.3); } 50% { box-shadow: 0 0 22px rgba(201,168,76,0.8); } }
+   .enter-btn { position: absolute; bottom: 12%; left: 50%; transform: translateX(-50%); background: rgba(201,168,76,0.1); border: 2px solid #C9A84C; color: #C9A84C; padding: 10px 32px; font-size: 12px; font-weight: 700; letter-spacing: 4px; border-radius: 3px; cursor: pointer; z-index: 30; animation: pulse-enter 2s ease-in-out infinite; white-space: nowrap; }
+@keyframes pulse-enter { 0%,100% { box-shadow: 0 0 8px rgba(201,168,76,0.3); } 50% { box-shadow: 0 0 22px rgba(201,168,76,0.8); } }
+
+/* KNOCK HINT */
+.knock-hint { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); color: rgba(201,168,76,0.8); font-size: 12px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; animation: pulse-enter 2s ease-in-out infinite; }
+.knock-counter { position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%); color: #C9A84C; font-size: 18px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; display: none; }
+
+/* DOOR SHAKE */
+@keyframes door-knock { 0% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } 100% { transform: translateX(0); } }
+.door-knocking { animation: door-knock 0.3s ease; }
+
+/* FRAME DUST */
+.frame-dust { position: fixed; pointer-events: none; background: rgba(180,120,60,0.7); border-radius: 50%; animation: frame-dust-fall 0.8s ease forwards; z-index: 999; }
+@keyframes frame-dust-fall { 0% { opacity: 0.8; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(40px) scale(0.3); } }
+
+/* KNOCK HINT */
+.knock-hint { position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%); color: rgba(201,168,76,0.8); font-size: 12px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; animation: pulse-enter 2s ease-in-out infinite; }
+.knock-counter { position: absolute; bottom: 28%; left: 50%; transform: translateX(-50%); color: #C9A84C; font-size: 18px; letter-spacing: 2px; font-family: 'Georgia', serif; white-space: nowrap; z-index: 30; display: none; }
+
+/* DOOR SHAKE */
+@keyframes door-knock { 0% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } 100% { transform: translateX(0); } }
+.door-knocking { animation: door-knock 0.3s ease; }
+
+/* FRAME DUST */
+.frame-dust { position: fixed; pointer-events: none; background: rgba(180,120,60,0.7); border-radius: 50%; animation: frame-dust-fall 0.8s ease forwards; z-index: 999; }
+@keyframes frame-dust-fall { 0% { opacity: 0.8; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(40px) scale(0.3); } }
 
     /* ===== FADE ===== */
     #fade-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; opacity: 0; z-index: 500; pointer-events: none; transition: opacity 0.6s ease; }
@@ -281,7 +305,7 @@
         <div class="window"><div class="window-shadow">👤👤</div></div>
         <div class="window"><div class="window-shadow">👤</div></div>
       </div>
-      <div class="door-frame">
+     <div class="door-frame" onclick="handleDoorKnock()">
         <div class="door-glow"></div>
         <div class="door door-left-panel" id="door-left">
           <div class="dp dp1"></div><div class="dp dp2"></div><div class="dp dp3"></div>
@@ -298,7 +322,9 @@
     <div class="footpath"></div>
     <div class="street"></div>
     <div class="cafe-name">✦ XYZ ✦</div>
-    <button class="enter-btn" id="enter-btn" onclick="startDoorAnimation()">ENTER</button>
+    <div class="knock-hint" id="knock-hint">👊 Knock to enter</div>
+<div class="knock-counter" id="knock-counter">👊 0/3</div>
+<button class="enter-btn" id="enter-btn" onclick="startDoorAnimation()">OR TAP TO ENTER</button>
   </div>
 
   <!-- INTERIOR SCREEN -->
@@ -394,8 +420,88 @@ function buildPages() {
   });
 }
 
+let knockCount = 0;
+let knockInProgress = false;
+
+function handleDoorKnock() {
+  if (knockInProgress) return;
+  knockCount++;
+
+  // Show counter
+  const counter = document.getElementById('knock-counter');
+  const hint = document.getElementById('knock-hint');
+  counter.style.display = 'block';
+  counter.textContent = `👊 ${knockCount}/3`;
+  hint.style.display = 'none';
+
+  // Shake door
+  const doorLeft = document.getElementById('door-left');
+  const doorRight = document.getElementById('door-right');
+  doorLeft.classList.remove('door-knocking');
+  doorRight.classList.remove('door-knocking');
+  void doorLeft.offsetWidth;
+  doorLeft.classList.add('door-knocking');
+  doorRight.classList.add('door-knocking');
+
+  // Spawn dust from frame
+  spawnFrameDust();
+
+  // Haptic feedback
+  if (navigator.vibrate) navigator.vibrate(40);
+
+  // Remove shake class after animation
+  setTimeout(() => {
+    doorLeft.classList.remove('door-knocking');
+    doorRight.classList.remove('door-knocking');
+  }, 300);
+
+  if (knockCount >= 3) {
+    knockInProgress = true;
+    counter.textContent = '👊 3/3 ✓';
+    setTimeout(() => {
+      startDoorAnimation();
+    }, 800);
+  }
+}
+
+function spawnFrameDust() {
+  const frame = document.querySelector('.door-frame');
+  const rect = frame.getBoundingClientRect();
+  for (let d = 0; d < 8; d++) {
+    const dust = document.createElement('div');
+    dust.className = 'frame-dust';
+    const size = Math.random() * 5 + 2;
+    dust.style.cssText = `
+      width:${size}px;
+      height:${size}px;
+      left:${rect.left + Math.random() * rect.width}px;
+      top:${rect.top + Math.random() * 20}px;
+    `;
+    document.body.appendChild(dust);
+    setTimeout(() => dust.remove(), 800);
+  }
+}
+
 function startDoorAnimation() {
   document.getElementById('enter-btn').style.display = 'none';
+  document.getElementById('knock-hint').style.display = 'none';
+  document.getElementById('knock-counter').style.display = 'none';
+  setTimeout(() => {
+    document.getElementById('door-left').classList.add('open');
+    document.getElementById('door-right').classList.add('open');
+  }, 300);
+  setTimeout(() => {
+    document.getElementById('fade-overlay').style.transition = 'opacity 0.5s ease';
+    document.getElementById('fade-overlay').classList.add('fade');
+  }, 2200);
+  setTimeout(() => {
+    document.getElementById('exterior').style.display = 'none';
+    document.getElementById('interior-screen').classList.add('show');
+    document.getElementById('fade-overlay').classList.remove('fade');
+    buildPages();
+    setTimeout(startBookAnimation, 600);
+  }, 2800);
+}
   setTimeout(() => {
     document.getElementById('door-left').classList.add('open');
     document.getElementById('door-right').classList.add('open');
