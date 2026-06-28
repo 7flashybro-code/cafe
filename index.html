@@ -7,7 +7,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: sans-serif; overflow: hidden; width: 100vw; height: 100vh; background: #1a0800; display: flex; align-items: center; justify-content: center; }
-
     #scene { position: relative; width: 100%; max-width: 420px; height: 100vh; overflow: hidden; }
 
     /* ===== EXTERIOR ===== */
@@ -25,7 +24,7 @@
     .ivy { position: absolute; font-size: 16px; line-height: 1.6; top: 8%; }
     .ivy-left { left: 2%; }
     .ivy-right { right: 2%; text-align: right; }
-    .facade { position: absolute; bottom: 16%; left: 20%; right: 20%; height: 76%; background: #2D5A3D; }
+    .facade { position: absolute; bottom: 16%; left: 20%; right: 20%; height: 76%; background: #2D5A3D; overflow: hidden; }
     .awning-wrap { position: absolute; top: -10px; left: -8%; width: 116%; z-index: 10; }
     .awning { width: 100%; height: 56px; background: repeating-linear-gradient(90deg, #2D5A3D 0px, #2D5A3D 18px, #EDE8D8 18px, #EDE8D8 36px); clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
     .awning-ridge { width: 92%; margin: 0 auto; height: 6px; background: #1E3D2A; }
@@ -44,11 +43,7 @@
     .window::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: #4A2A10; }
     .window::after { content: ''; position: absolute; top: 0; left: 50%; width: 2px; height: 100%; background: #4A2A10; }
     .window-shadow { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); font-size: 16px; filter: brightness(0); opacity: 0.4; }
-    .interior-behind { position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, #2A1200 0%, #3D1A00 30%, #5A2800 60%, #7A3C00 100%); overflow: hidden; }
-    .int-light { position: absolute; top: 10%; left: 50%; transform: translateX(-50%); width: 60%; height: 40%; background: radial-gradient(ellipse at center, rgba(255,200,80,0.6) 0%, rgba(255,150,40,0.2) 50%, transparent 80%); }
-    .int-table { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); width: 60%; height: 12px; background: #6B3A1F; border-radius: 3px; }
-    .int-chairs { position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%); width: 70%; display: flex; justify-content: space-around; }
-    .int-chair { width: 20px; height: 24px; background: #4A2A10; border-radius: 3px 3px 0 0; }
+    .interior-behind { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, rgba(255,200,80,0.5) 0%, rgba(180,90,20,0.8) 60%, rgba(80,30,0,1) 100%); }
     .door-frame { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 54%; height: 50%; border: 4px solid #4A2A10; border-bottom: none; border-radius: 2px 2px 0 0; overflow: hidden; display: flex; z-index: 3; }
     .door-glow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(ellipse at center, rgba(255,190,80,0.9) 0%, rgba(255,130,30,0.6) 40%, transparent 80%); opacity: 1; z-index: 0; }
     .door { width: 50%; height: 100%; position: relative; z-index: 1; transition: transform 2s cubic-bezier(0.4,0,0.2,1); }
@@ -60,7 +55,7 @@
     .dp1 { top: 6%; left: 10%; right: 10%; height: 28%; }
     .dp2 { top: 40%; left: 10%; right: 10%; height: 28%; }
     .dp3 { top: 74%; left: 10%; right: 10%; height: 18%; }
-    .handle { position: absolute; top: 47%; width: 5px; height: 20px; background: linear-gradient(180deg, #E0C060, #C9A84C, #A08030); border-radius: 3px; box-shadow: 0 0 5px rgba(201,168,76,0.5); }
+    .handle { position: absolute; top: 47%; width: 5px; height: 20px; background: linear-gradient(180deg, #E0C060, #C9A84C, #A08030); border-radius: 3px; }
     .handle-l { right: 7%; }
     .handle-r { left: 7%; }
     .plant { position: absolute; bottom: 0; font-size: 32px; z-index: 4; line-height: 1; }
@@ -77,19 +72,15 @@
     /* ===== INTERIOR SCREEN ===== */
     #interior-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 2; overflow: hidden; }
     #interior-screen.show { display: block; }
+
+    /* ONLY IMAGE — NO CSS INTERIOR */
     .int-bg {
       position: absolute; top: 0; left: 0;
       width: 100%; height: 100%;
       background-image: url('https://raw.githubusercontent.com/7flashybro-code/cafe/main/interior.png');
       background-size: cover;
-      background-position: center;
-      filter: brightness(1.1);
-    }
-    .int-bg::after {
-      content: '';
-      position: absolute; top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.15);
+      background-position: center top;
+      filter: brightness(1.05);
     }
 
     /* ===== BOOK ===== */
@@ -99,7 +90,7 @@
     .book-cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #6B3A1F, #4A2510, #8B5230); border-radius: 4px 12px 12px 4px; border: 2px solid #C9A84C; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; box-shadow: -4px 4px 20px rgba(0,0,0,0.6), 4px 4px 20px rgba(0,0,0,0.4); z-index: 5; transition: transform 0.8s ease; transform-style: preserve-3d; }
     .book-cover.open { transform: rotateY(-180deg); transform-origin: left center; }
     .book-spine { position: absolute; left: 0; top: 0; width: 14px; height: 100%; background: linear-gradient(180deg, #3D1A00, #6B3A1F, #3D1A00); border-radius: 4px 0 0 4px; border-right: 1px solid #C9A84C; }
-    .book-title { font-family: 'Georgia', serif; color: #C9A84C; font-size: 18px; letter-spacing: 3px; text-shadow: 0 0 10px rgba(201,168,76,0.6); }
+    .book-title { font-family: 'Georgia', serif; color: #C9A84C; font-size: 18px; letter-spacing: 3px; }
     .book-subtitle { color: rgba(201,168,76,0.6); font-size: 10px; letter-spacing: 2px; }
     .book-ornament { color: #C9A84C; font-size: 20px; }
     .left-page { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(135deg, #FFF0DC, #FFF8F0); border: 1px solid #DDD0B0; border-right: none; border-radius: 8px 0 0 8px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; padding: 12px; }
@@ -116,7 +107,7 @@
     /* ===== CATEGORY GRID ===== */
     #category-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 10; overflow-y: auto; padding: 16px 12px 80px; background: transparent; }
     #category-grid.show { display: block; }
-    .grid-title { font-family: 'Georgia', serif; color: #fff; font-size: 16px; letter-spacing: 3px; text-align: center; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+    .grid-title { font-family: 'Georgia', serif; color: #fff; font-size: 16px; letter-spacing: 3px; text-align: center; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0,0,0,0.9); font-weight: bold; }
     .cat-row { display: flex; gap: 10px; margin-bottom: 10px; justify-content: center; }
     .cat-card {
       flex: 1; max-width: 48%;
@@ -132,7 +123,7 @@
       transition: transform 0.15s, box-shadow 0.15s;
       box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
-    .cat-card:active { transform: scale(0.95); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .cat-card:active { transform: scale(0.95); }
     .cat-emoji { font-size: 38px; }
     .cat-name { font-family: 'Georgia', serif; font-size: 14px; font-weight: bold; color: #3A1A00; letter-spacing: 1px; text-align: center; }
   </style>
@@ -153,11 +144,7 @@
     <div class="wall wall-left"><div class="ivy ivy-left">🌿🌿<br>🌿🌿<br>🌿🌿<br>🌿</div></div>
     <div class="wall wall-right"><div class="ivy ivy-right">🌿🌿<br>🌿🌿<br>🌿🌿<br>🌿</div></div>
     <div class="facade">
-      <div class="interior-behind">
-        <div class="int-light"></div>
-        <div class="int-table"></div>
-        <div class="int-chairs"><div class="int-chair"></div><div class="int-chair"></div><div class="int-chair"></div></div>
-      </div>
+      <div class="interior-behind"></div>
       <div class="awning-wrap">
         <div class="awning"></div>
         <div class="awning-ridge"></div>
@@ -194,7 +181,7 @@
     <button class="enter-btn" id="enter-btn" onclick="startDoorAnimation()">ENTER</button>
   </div>
 
-  <!-- INTERIOR SCREEN -->
+  <!-- INTERIOR SCREEN — IMAGE ONLY -->
   <div id="interior-screen">
     <div class="int-bg"></div>
 
