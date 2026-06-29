@@ -7,279 +7,268 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@600&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Playfair Display', serif; overflow: hidden; width: 100vw; height: 100vh; background: #0a0805; display: flex; align-items: center; justify-content: center; }
-    #scene { position: relative; width: 100%; max-width: 420px; height: 100vh; overflow: hidden; background: #0a0805; }
+    body { font-family: 'Playfair Display', serif; overflow: hidden; width: 100vw; height: 100vh; background: #000; display: flex; align-items: center; justify-content: center; }
+    #scene { position: relative; width: 100%; max-width: 420px; height: 100vh; overflow: hidden; background: #000; }
 
     /* ===== FADE ===== */
     #fade-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; opacity: 0; z-index: 500; pointer-events: none; transition: opacity 0.8s ease; }
     #fade-overlay.fade { opacity: 1; }
 
-    /* ===== MATCH SCREEN ===== */
-    #match-screen {
+    /* ===== OPENING SCREEN ===== */
+    #opening-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: #000; z-index: 10;
+      z-index: 10; cursor: pointer;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 0;
+      align-items: center; justify-content: flex-end;
+      padding-bottom: 18%;
     }
 
-    /* KITCHEN BACKGROUND */
-    .kitchen-bg {
+    /* ENTRANCE IMAGE */
+    .entrance-img {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      opacity: 0; transition: opacity 2s ease;
+      object-fit: cover; object-position: center;
+      filter: brightness(0.35) saturate(0.8);
+      transition: filter 0.4s ease;
     }
-    .kitchen-bg.lit { opacity: 1; }
+    .entrance-img.glow-1 { filter: brightness(0.45) saturate(0.9); }
+    .entrance-img.glow-2 { filter: brightness(0.55) saturate(1.0); }
+    .entrance-img.glow-3 { filter: brightness(0.65) saturate(1.1); }
+    .entrance-img.glow-4 { filter: brightness(0.85) saturate(1.2); }
 
-    /* BRICK WALL */
-    .kb-wall {
-      position: absolute; top: 0; left: 0; width: 100%; height: 65%;
-      background-color: #1A0C06;
-      background-image:
-        repeating-linear-gradient(transparent, transparent 16px, rgba(0,0,0,0.3) 16px, rgba(0,0,0,0.3) 18px),
-        repeating-linear-gradient(90deg, transparent, transparent 36px, rgba(0,0,0,0.2) 36px, rgba(0,0,0,0.2) 38px);
-    }
-    /* SHELF */
-    .kb-shelf { position: absolute; top: 18%; left: 5%; right: 5%; height: 8px; background: linear-gradient(180deg, #3D2010, #2A1508); border-radius: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
-    /* HANGING POTS */
-    .kb-pot { position: absolute; top: 0%; font-size: 28px; filter: brightness(0.4) sepia(1) hue-rotate(10deg); }
-    .kb-pot-1 { left: 12%; }
-    .kb-pot-2 { left: 38%; }
-    .kb-pot-3 { right: 12%; }
-    .kb-pot-wire { position: absolute; top: 0; width: 2px; height: 18%; background: rgba(80,50,20,0.6); }
-    .kb-pot-wire-1 { left: 16%; }
-    .kb-pot-wire-2 { left: 42%; }
-    .kb-pot-wire-3 { right: 16%; }
-    /* TABLE */
-    .kb-table { position: absolute; bottom: 0; left: 0; right: 0; height: 38%; background: linear-gradient(180deg, #2A1508, #1A0C04); border-top: 3px solid #3D2010; }
-    .kb-table-grain {
+    /* DARK OVERLAY */
+    .dark-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-image: repeating-linear-gradient(90deg, transparent, transparent 8px, rgba(255,255,255,0.01) 8px, rgba(255,255,255,0.01) 9px);
+      background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0) 0%, rgba(0,0,0,0.7) 60%);
+      transition: background 0.4s ease;
+      z-index: 1;
     }
-    /* CANDLE ON TABLE */
-    .kb-candle { position: absolute; bottom: 32%; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-    .kb-candle-body { width: 12px; height: 50px; background: linear-gradient(180deg, #F5E6C8, #E8D4A8, #D4BC88); border-radius: 2px; box-shadow: inset -2px 0 4px rgba(0,0,0,0.2); }
-    .kb-candle-wick { width: 1px; height: 8px; background: #2A1508; margin-bottom: -1px; }
-    .kb-candle-base { width: 24px; height: 6px; background: linear-gradient(180deg, #8B5E3C, #6B3A1F); border-radius: 2px; }
-    .kb-candle-glow { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 120px; height: 120px; background: radial-gradient(ellipse at center, rgba(255,180,60,0.15) 0%, transparent 70%); pointer-events: none; }
+    .dark-overlay.glow-1 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.08) 0%, rgba(0,0,0,0.65) 60%); }
+    .dark-overlay.glow-2 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.18) 0%, rgba(0,0,0,0.55) 60%); }
+    .dark-overlay.glow-3 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.30) 0%, rgba(0,0,0,0.45) 60%); }
+    .dark-overlay.glow-4 { background: radial-gradient(ellipse at 50% 60%, rgba(255,160,50,0.50) 0%, rgba(0,0,0,0.2) 70%); }
 
     /* FLAME */
-    #flame-wrap {
-      position: absolute; z-index: 20;
+    #flame-container {
+      position: absolute; z-index: 5;
+      bottom: 28%; left: 50%; transform: translateX(-50%);
       display: flex; flex-direction: column; align-items: center;
-      bottom: 40%; left: 50%; transform: translateX(-50%);
     }
-    .flame {
-      width: 20px; height: 0px;
-      background: transparent;
+    .flame-el {
+      width: 0; height: 0;
       border-radius: 50% 50% 20% 20%;
-      position: relative;
-      transition: height 0.3s ease, width 0.3s ease;
+      transition: all 0.35s ease;
       filter: blur(0.5px);
     }
-    .flame.size-1 { height: 30px; width: 16px; background: radial-gradient(ellipse at bottom, #FFF 0%, #FFD700 30%, #FF8C00 60%, #FF4500 80%, transparent 100%); box-shadow: 0 0 8px #FF8C00, 0 0 20px rgba(255,140,0,0.4); }
-    .flame.size-2 { height: 45px; width: 22px; background: radial-gradient(ellipse at bottom, #FFF 0%, #FFD700 25%, #FF8C00 55%, #FF4500 75%, transparent 100%); box-shadow: 0 0 15px #FF8C00, 0 0 35px rgba(255,140,0,0.5); }
-    .flame.size-3 { height: 60px; width: 28px; background: radial-gradient(ellipse at bottom, #FFF 0%, #FFD700 20%, #FF8C00 50%, #FF4500 70%, transparent 100%); box-shadow: 0 0 25px #FF8C00, 0 0 60px rgba(255,140,0,0.6); }
-    .flame.size-4 { height: 80px; width: 36px; background: radial-gradient(ellipse at bottom, #FFF 0%, #FFD700 15%, #FF8C00 45%, #FF4500 65%, transparent 100%); box-shadow: 0 0 40px #FF8C00, 0 0 100px rgba(255,140,0,0.7); }
+    .flame-el.s1 { width: 18px; height: 32px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 25%, #FF8C00 55%, #FF4500 80%, transparent 100%); box-shadow: 0 0 12px #FF8C00, 0 0 30px rgba(255,140,0,0.5); animation: flicker 0.7s ease-in-out infinite; }
+    .flame-el.s2 { width: 24px; height: 48px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 20%, #FF8C00 50%, #FF4500 75%, transparent 100%); box-shadow: 0 0 20px #FF8C00, 0 0 50px rgba(255,140,0,0.6); animation: flicker 0.65s ease-in-out infinite; }
+    .flame-el.s3 { width: 32px; height: 65px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 18%, #FF8C00 48%, #FF4500 70%, transparent 100%); box-shadow: 0 0 35px #FF8C00, 0 0 80px rgba(255,140,0,0.7); animation: flicker 0.6s ease-in-out infinite; }
+    .flame-el.s4 { width: 44px; height: 88px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 15%, #FF8C00 45%, #FF4500 65%, transparent 100%); box-shadow: 0 0 55px #FF8C00, 0 0 120px rgba(255,140,0,0.8), 0 0 200px rgba(255,100,0,0.4); animation: flicker 0.55s ease-in-out infinite; }
     @keyframes flicker {
       0%,100% { transform: scaleX(1) scaleY(1) rotate(-1deg); }
-      25% { transform: scaleX(0.92) scaleY(1.04) rotate(1deg); }
-      50% { transform: scaleX(1.05) scaleY(0.96) rotate(-0.5deg); }
-      75% { transform: scaleX(0.96) scaleY(1.02) rotate(1.5deg); }
+      25% { transform: scaleX(0.90) scaleY(1.05) rotate(1.5deg); }
+      50% { transform: scaleX(1.06) scaleY(0.95) rotate(-0.5deg); }
+      75% { transform: scaleX(0.94) scaleY(1.03) rotate(2deg); }
     }
-    .flame.flickering { animation: flicker 0.8s ease-in-out infinite; }
 
-    /* MATCH */
-    #match-stick {
-      position: absolute; z-index: 25;
-      bottom: 35%; right: 25%;
-      width: 4px; height: 70px;
-      background: linear-gradient(180deg, #F5E6C8, #D4A870);
-      border-radius: 2px;
-      transform-origin: bottom center;
-      transform: rotate(-30deg);
-      transition: transform 1s ease, opacity 0.5s ease;
+    /* CANDLE BODY */
+    .candle-body {
+      width: 14px; height: 55px;
+      background: linear-gradient(180deg, #F5E6C8, #E8D4A8, #D4BC88);
+      border-radius: 2px; margin-top: -2px;
+      box-shadow: inset -3px 0 6px rgba(0,0,0,0.2);
     }
-    #match-stick::before {
-      content: '';
-      position: absolute; top: -8px; left: -4px;
-      width: 12px; height: 12px;
-      background: radial-gradient(circle, #FF4500, #8B0000);
-      border-radius: 50% 50% 30% 30%;
-    }
-    #match-stick.struck { transform: rotate(-60deg) translateY(-20px); }
-    #match-stick.gone { opacity: 0; transform: rotate(-90deg) translateY(-40px); }
+    .candle-base { width: 28px; height: 7px; background: linear-gradient(180deg, #8B5E3C, #6B3A1F); border-radius: 2px; }
+    .candle-wick { width: 2px; height: 10px; background: #2A1508; margin-bottom: -2px; }
 
-    /* MATCH HINT */
-    #match-hint {
-      position: absolute; z-index: 30;
-      bottom: 20%; left: 50%; transform: translateX(-50%);
+    /* HINT */
+    #open-hint {
+      position: relative; z-index: 5;
       font-family: 'Dancing Script', cursive;
-      font-size: 16px; color: rgba(201,168,76,0.7);
-      letter-spacing: 1px; white-space: nowrap;
-      text-align: center;
+      font-size: 15px; color: rgba(201,168,76,0.75);
+      letter-spacing: 1px; text-align: center;
       animation: hint-pulse 2s ease-in-out infinite;
+      margin-top: 20px;
     }
-    #tap-count {
-      position: absolute; z-index: 30;
-      bottom: 28%; left: 50%; transform: translateX(-50%);
+    #tap-progress {
+      position: relative; z-index: 5;
       font-family: 'Playfair Display', serif;
-      font-size: 13px; color: rgba(255,180,60,0.8);
-      letter-spacing: 3px; white-space: nowrap;
-      display: none;
+      font-size: 12px; color: rgba(255,180,60,0.8);
+      letter-spacing: 4px; text-align: center;
+      margin-top: 8px; display: none;
     }
     @keyframes hint-pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
 
-    /* AMBIENT LIGHT */
-    .ambient-light {
+    /* BURN TRANSITION */
+    .burn-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(ellipse at 50% 65%, rgba(255,140,30,0) 0%, transparent 60%);
-      pointer-events: none; z-index: 15;
-      transition: background 0.5s ease;
+      z-index: 8; pointer-events: none; opacity: 0;
+      background: radial-gradient(ellipse at 50% 55%, rgba(255,100,0,0.9) 0%, rgba(255,50,0,0.6) 30%, transparent 65%);
+      transition: opacity 0.4s ease;
     }
-    .ambient-light.glow-1 { background: radial-gradient(ellipse at 50% 65%, rgba(255,140,30,0.08) 0%, transparent 60%); }
-    .ambient-light.glow-2 { background: radial-gradient(ellipse at 50% 65%, rgba(255,140,30,0.15) 0%, transparent 60%); }
-    .ambient-light.glow-3 { background: radial-gradient(ellipse at 50% 65%, rgba(255,140,30,0.25) 0%, transparent 60%); }
-    .ambient-light.glow-4 { background: radial-gradient(ellipse at 50% 65%, rgba(255,140,30,0.4) 0%, transparent 70%); }
+    .burn-overlay.active { opacity: 1; }
 
-    /* ===== BOOK SCREEN ===== */
-    #book-screen {
+    /* ===== INTERIOR SCREEN ===== */
+    #interior-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      display: none; z-index: 8;
-      background: linear-gradient(180deg, #0D0806 0%, #1A0C04 40%, #2A1508 100%);
+      display: none; z-index: 2; overflow: hidden;
     }
-    #book-screen.show { display: block; }
+    #interior-screen.show { display: block; }
+    .interior-img {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      filter: brightness(0.55) saturate(0.9);
+    }
+    .interior-vignette {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.5) 100%);
+    }
 
-    /* TABLE IN BOOK SCREEN */
-    .bs-table { position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: linear-gradient(180deg, #2A1508, #1A0C04); border-top: 3px solid #3D2010; }
-    .bs-candle { position: absolute; top: -60px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
-    .bs-candle-flame { width: 14px; height: 22px; background: radial-gradient(ellipse at bottom, #FFF 0%, #FFD700 30%, #FF8C00 60%, transparent 100%); border-radius: 50% 50% 20% 20%; animation: flicker 0.8s ease-in-out infinite; box-shadow: 0 0 15px #FF8C00, 0 0 40px rgba(255,140,0,0.4); margin-bottom: -2px; }
-    .bs-candle-body { width: 10px; height: 40px; background: linear-gradient(180deg, #F5E6C8, #E8D4A8); border-radius: 1px; }
-    .bs-candle-base { width: 20px; height: 5px; background: #6B3A1F; border-radius: 1px; }
-    .bs-ambient { position: absolute; bottom: 35%; left: 50%; transform: translateX(-50%); width: 200px; height: 200px; background: radial-gradient(ellipse at center, rgba(255,140,30,0.12) 0%, transparent 70%); pointer-events: none; }
-
-    /* BOOK */
-    #book-container { position: absolute; top: 12%; left: 50%; transform: translateX(-50%); width: 88%; z-index: 10; }
-    .book { position: relative; width: 100%; height: 220px; perspective: 1200px; }
-    .book-cover { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(160deg, #1C0E06, #2A1508, #3D2010); border-radius: 3px 10px 10px 3px; border: 1px solid rgba(201,168,76,0.25); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; box-shadow: -6px 4px 24px rgba(0,0,0,0.9), 4px 4px 16px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5); z-index: 5; transition: transform 1s cubic-bezier(0.4,0,0.2,1); transform-style: preserve-3d; }
+    /* ===== BOOK ===== */
+    #book-container {
+      position: absolute; top: 8%; left: 50%;
+      transform: translateX(-50%);
+      width: 88%; z-index: 10; display: none;
+    }
+    #book-container.show { display: block; }
+    .book { position: relative; width: 100%; height: 230px; perspective: 1200px; }
+    .book-cover {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1C0E06, #2A1508, #3D2010);
+      border-radius: 3px 10px 10px 3px;
+      border: 1px solid rgba(201,168,76,0.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 6px;
+      box-shadow: -6px 4px 24px rgba(0,0,0,0.9), 4px 4px 16px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
+      z-index: 5; transition: transform 1s cubic-bezier(0.4,0,0.2,1);
+      transform-style: preserve-3d;
+    }
     .book-cover.open { transform: rotateY(-180deg); transform-origin: left center; }
-    .book-spine { position: absolute; left: 0; top: 0; width: 16px; height: 100%; background: linear-gradient(180deg, #0D0604, #2A1508, #0D0604); border-radius: 3px 0 0 3px; border-right: 1px solid rgba(201,168,76,0.15); }
-    .book-ornament { color: rgba(201,168,76,0.7); font-size: 16px; }
-    .book-title-text { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.8); font-size: 20px; letter-spacing: 2px; }
-    .book-subtitle-text { font-family: 'Playfair Display', serif; color: rgba(201,168,76,0.4); font-size: 9px; letter-spacing: 4px; }
-    .book-rule { width: 60px; height: 1px; background: rgba(201,168,76,0.3); }
+    .book-spine { position: absolute; left: 0; top: 0; width: 16px; height: 100%; background: linear-gradient(180deg, #0D0604, #2A1508, #0D0604); border-radius: 3px 0 0 3px; border-right: 1px solid rgba(201,168,76,0.1); }
+    .book-ornament { color: rgba(201,168,76,0.6); font-size: 14px; }
+    .book-title-text { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.75); font-size: 18px; letter-spacing: 1px; text-align: center; padding: 0 20px; }
+    .book-rule { width: 50px; height: 1px; background: rgba(201,168,76,0.25); }
+    .book-subtitle-text { font-family: 'Playfair Display', serif; color: rgba(201,168,76,0.35); font-size: 8px; letter-spacing: 4px; }
     .left-page { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(135deg, #F5ECD8, #EDE0C4); border: 1px solid #D4C0A0; border-right: none; border-radius: 6px 0 0 6px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; padding: 16px; }
-    .left-page-title { font-family: 'Dancing Script', cursive; font-size: 16px; color: #4A2A10; }
-    .left-page-line { width: 50px; height: 1px; background: rgba(74,42,16,0.3); }
-    .left-page-text { font-size: 9px; color: rgba(74,42,16,0.5); letter-spacing: 1px; text-align: center; font-style: italic; }
+    .left-page-title { font-family: 'Dancing Script', cursive; font-size: 15px; color: #4A2A10; }
+    .left-page-line { width: 40px; height: 1px; background: rgba(74,42,16,0.3); }
+    .left-page-text { font-size: 9px; color: rgba(74,42,16,0.4); letter-spacing: 1px; text-align: center; font-style: italic; line-height: 1.6; }
     .book-divider { position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background: linear-gradient(180deg, #0D0604, #3D2010, #0D0604); z-index: 2; box-shadow: -3px 0 8px rgba(0,0,0,0.5), 3px 0 8px rgba(0,0,0,0.5); }
-    .page { position: absolute; top: 0; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d; transition: transform 0.45s ease-in-out; left: 50%; }
+    .page { position: absolute; top: 0; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d; transition: transform 0.42s ease-in-out; left: 50%; }
     .page-front, .page-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; border-radius: 0 6px 6px 0; padding: 10px; }
     .page-front { background: linear-gradient(135deg, #F5ECD8, #EDE0C4); border: 1px solid #D4C0A0; border-left: none; }
     .page-back { background: linear-gradient(135deg, #EDE0C4, #F5ECD8); border: 1px solid #D4C0A0; border-left: none; transform: rotateY(180deg); }
     .page.turned { transform: rotateY(-180deg); }
     .page-emoji { font-size: 22px; }
-    .page-name { font-family: 'Dancing Script', cursive; font-size: 13px; color: #3A1A08; text-align: center; }
-    .page-rule { width: 30px; height: 1px; background: rgba(74,42,16,0.25); }
+    .page-name { font-family: 'Dancing Script', cursive; font-size: 12px; color: #3A1A08; text-align: center; }
+    .page-rule { width: 28px; height: 1px; background: rgba(74,42,16,0.2); }
 
-    /* ===== CATEGORY GRID ===== */
-    #category-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 10; overflow-y: auto; padding: 10px 8px 60px; background: transparent; }
+    /* ===== POLAROID CATEGORY GRID ===== */
+    #category-grid {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      display: none; z-index: 10;
+      overflow-y: auto; padding: 14px 10px 70px;
+    }
     #category-grid.show { display: block; }
-    .grid-title { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.9); font-size: 22px; text-align: center; margin-bottom: 10px; text-shadow: 0 0 20px rgba(201,168,76,0.4); }
+    .grid-title {
+      font-family: 'Dancing Script', cursive;
+      color: rgba(201,168,76,0.9); font-size: 22px;
+      text-align: center; margin-bottom: 12px;
+      text-shadow: 0 0 20px rgba(201,168,76,0.3);
+    }
     .cat-row { display: flex; gap: 8px; margin-bottom: 8px; justify-content: center; }
+
+    /* POLAROID STYLE */
     .cat-card {
       flex: 1; max-width: 48%;
-      background: rgba(20,10,4,0.85);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(201,168,76,0.25);
-      border-radius: 8px;
-      padding: 12px 6px;
+      background: #F8F0E0;
+      border-radius: 2px;
+      padding: 10px 6px 20px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       gap: 6px; cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.4);
-      position: relative; overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transform: rotate(var(--r, 0deg));
+      opacity: 0;
     }
-    .cat-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(to right, transparent, rgba(201,168,76,0.4), transparent);
+    .cat-card:nth-child(1) { --r: -1.5deg; }
+    .cat-card:nth-child(2) { --r: 1.8deg; }
+    .cat-card:active { transform: rotate(0deg) scale(0.96); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+    .cat-card.appear { animation: polaroid-drop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    @keyframes polaroid-drop {
+      0% { opacity: 0; transform: rotate(var(--r,0deg)) translateY(-30px) scale(0.8); }
+      100% { opacity: 1; transform: rotate(var(--r,0deg)) translateY(0) scale(1); }
     }
-    .cat-card:active { transform: scale(0.96); border-color: rgba(201,168,76,0.5); }
-    .cat-card-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 80px; height: 80px; background: radial-gradient(ellipse, rgba(201,168,76,0.04) 0%, transparent 70%); pointer-events: none; }
-    .cat-emoji { font-size: 28px; }
-    .cat-name { font-family: 'Dancing Script', cursive; font-size: 14px; color: rgba(201,168,76,0.85); letter-spacing: 0.5px; text-align: center; }
+    .cat-photo { width: 100%; aspect-ratio: 1; background: rgba(0,0,0,0.06); border-radius: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
+    .cat-emoji { font-size: 32px; }
+    .cat-name { font-family: 'Dancing Script', cursive; font-size: 13px; color: #3A1A08; letter-spacing: 0.5px; text-align: center; }
 
-    /* ===== SLATE SCREEN ===== */
-    #slate-screen {
+    /* ===== CHALKBOARD SCREEN ===== */
+    #chalk-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 20; display: flex; align-items: center; justify-content: center;
-      background: rgba(10,8,5,0.96);
-      transform: translateY(-100%);
-      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+      z-index: 20;
+      transform: translateX(100%);
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+      overflow: hidden;
     }
-    #slate-screen.show { transform: translateY(0); }
+    #chalk-screen.show { transform: translateX(0); }
 
-    /* HANGING SLATE */
-    .slate-wrap {
-      position: relative; width: 90%; max-height: 85vh;
-      display: flex; flex-direction: column; align-items: center;
+    .board-bg {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      filter: brightness(0.7) saturate(0.8);
     }
-    .slate-string { width: 2px; height: 24px; background: rgba(180,140,80,0.5); margin: 0 auto; }
-    .slate-nail { width: 8px; height: 8px; background: radial-gradient(circle, #C9A84C, #8B6914); border-radius: 50%; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-    .slate-board {
-      width: 100%; flex: 1;
-      background: linear-gradient(160deg, #1A2A1A, #142014, #1A2A1A);
-      border: 3px solid #3D2A10;
-      border-radius: 4px;
-      padding: 16px 14px 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.9), inset 0 0 30px rgba(0,0,0,0.5);
-      overflow-y: auto;
-      position: relative;
+    .board-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(10,25,15,0.55);
     }
-    .slate-board::before {
-      content: '';
-      position: absolute; top: 4px; left: 4px; right: 4px; bottom: 4px;
-      border: 1px solid rgba(255,255,255,0.04);
-      border-radius: 2px; pointer-events: none;
+    .board-content {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      padding: 16px 18px 24px; overflow-y: auto;
     }
-    /* Chalk tray */
-    .chalk-tray { position: absolute; bottom: -10px; left: 5%; right: 5%; height: 8px; background: linear-gradient(180deg, #3D2A10, #2A1A08); border-radius: 0 0 4px 4px; }
-    .chalk-piece { position: absolute; bottom: -6px; left: 15%; width: 30px; height: 8px; background: linear-gradient(180deg, #E8E0D0, #D4C8B0); border-radius: 3px; transform: rotate(-5deg); }
 
-    .slate-back-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: rgba(255,255,255,0.5); font-size: 12px; cursor: pointer; margin-bottom: 10px; font-family: 'Playfair Display', serif; letter-spacing: 1px; padding: 4px 0; }
-    .slate-back-btn:active { opacity: 0.6; }
-    .slate-title { font-family: 'Dancing Script', cursive; font-size: 24px; color: #fff; text-align: center; letter-spacing: 2px; margin-bottom: 4px; text-shadow: 0 0 8px rgba(255,255,255,0.1); opacity: 0; animation: chalk-appear 0.5s ease forwards; }
-    .slate-rule { width: 70%; height: 1px; background: rgba(255,255,255,0.15); margin: 0 auto 14px; opacity: 0; animation: chalk-appear 0.5s ease 0.2s forwards; }
+    /* WOODEN FRAME BORDER */
+    .board-frame {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      border: 12px solid transparent;
+      border-image: linear-gradient(135deg, #8B5E3C, #6B3A1F, #A0714F, #6B3A1F) 1;
+      pointer-events: none; z-index: 2;
+    }
 
-    /* SLATE ITEMS */
-    .slate-item { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed rgba(255,255,255,0.1); opacity: 0; }
-    .slate-item:last-child { border-bottom: none; margin-bottom: 0; }
-    .slate-item-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; gap: 8px; }
-    .slate-item-name-wrap { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .slate-item-emoji { font-size: 18px; flex-shrink: 0; }
-    .slate-item-name { font-family: 'Dancing Script', cursive; font-size: 17px; color: #fff; line-height: 1.2; }
-    .slate-price { background: none; border: 1px solid rgba(201,168,76,0.5); color: rgba(201,168,76,0.9); font-size: 12px; font-weight: bold; padding: 3px 10px; border-radius: 99px; white-space: nowrap; font-family: 'Playfair Display', serif; }
-    .slate-desc { font-size: 11px; color: rgba(255,255,255,0.45); font-style: italic; margin-bottom: 10px; line-height: 1.5; font-family: 'Playfair Display', serif; }
-    .slate-order-btn { width: 100%; padding: 9px; background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.3); color: rgba(201,168,76,0.8); border-radius: 4px; font-size: 11px; font-weight: 600; letter-spacing: 3px; cursor: pointer; font-family: 'Playfair Display', serif; transition: all 0.2s; }
-    .slate-order-btn:active { background: rgba(201,168,76,0.18); }
+    .chalk-back-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: rgba(255,255,255,0.55); font-size: 12px; cursor: pointer; margin-bottom: 14px; font-family: 'Playfair Display', serif; letter-spacing: 1px; padding: 4px 0; position: relative; z-index: 3; }
+    .chalk-back-btn:active { opacity: 0.6; }
 
-    @keyframes chalk-appear { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-    .slate-item.show-item { animation: chalk-appear 0.4s ease forwards; }
+    .board-title { font-family: 'Dancing Script', cursive; font-size: 26px; color: #fff; text-align: center; letter-spacing: 2px; margin-bottom: 4px; text-shadow: 0 0 10px rgba(255,255,255,0.15); opacity: 0; animation: chalk-appear 0.5s ease forwards; position: relative; z-index: 3; }
+    .board-rule { width: 65%; height: 1px; background: rgba(255,255,255,0.2); margin: 0 auto 16px; opacity: 0; animation: chalk-appear 0.5s ease 0.2s forwards; position: relative; z-index: 3; }
+
+    .board-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed rgba(255,255,255,0.12); opacity: 0; position: relative; z-index: 3; }
+    .board-item:last-child { border-bottom: none; margin-bottom: 0; }
+    .board-item-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; gap: 8px; }
+    .board-item-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .board-item-emoji { font-size: 20px; flex-shrink: 0; }
+    .board-item-name { font-family: 'Dancing Script', cursive; font-size: 19px; color: #fff; line-height: 1.1; }
+    .board-price { border: 1px solid rgba(201,168,76,0.45); color: rgba(201,168,76,0.85); font-size: 12px; padding: 3px 10px; border-radius: 99px; white-space: nowrap; font-family: 'Playfair Display', serif; flex-shrink: 0; }
+    .board-desc { font-size: 11px; color: rgba(255,255,255,0.42); font-style: italic; margin-bottom: 11px; line-height: 1.6; font-family: 'Playfair Display', serif; }
+    .board-order-btn { width: 100%; padding: 10px; background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.28); color: rgba(201,168,76,0.8); border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: 3px; cursor: pointer; font-family: 'Playfair Display', serif; transition: all 0.2s; }
+    .board-order-btn:active { background: rgba(201,168,76,0.16); }
+
+    @keyframes chalk-appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .board-item.show-item { animation: chalk-appear 0.4s ease forwards; }
+
     .chalk-writing { display: inline; }
-    .chalk-cursor { display: inline-block; width: 1px; height: 17px; background: rgba(255,255,255,0.7); margin-left: 1px; vertical-align: middle; animation: blink-cursor 0.5s ease infinite; }
-    @keyframes blink-cursor { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-    .chalk-dust-el { position: fixed; pointer-events: none; border-radius: 50%; background: rgba(255,255,255,0.5); animation: dust-fade 0.5s ease forwards; z-index: 999; }
-    @keyframes dust-fade { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(0.2) translate(var(--dx), var(--dy)); } }
+    .chalk-cursor { display: inline-block; width: 1.5px; height: 19px; background: rgba(255,255,255,0.75); margin-left: 1px; vertical-align: middle; animation: blink-cur 0.5s ease infinite; }
+    @keyframes blink-cur { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .chalk-dust-p { position: fixed; pointer-events: none; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dust-f 0.5s ease forwards; z-index: 999; }
+    @keyframes dust-f { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(0.2) translate(var(--dx), var(--dy)); } }
 
     /* POPUP */
-    #order-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 600; display: none; align-items: center; justify-content: center; }
+    #order-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 600; display: none; align-items: center; justify-content: center; }
     #order-popup.show { display: flex; }
-    .popup-box { background: linear-gradient(160deg, #1C0E06, #2A1508); border: 1px solid rgba(201,168,76,0.3); border-radius: 8px; padding: 32px 24px; text-align: center; width: 78%; box-shadow: 0 16px 48px rgba(0,0,0,0.8); }
-    .popup-flame { font-size: 32px; margin-bottom: 12px; }
-    .popup-title { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.9); font-size: 22px; margin-bottom: 8px; }
-    .popup-msg { color: rgba(255,255,255,0.5); font-size: 12px; margin-bottom: 20px; line-height: 1.6; font-style: italic; letter-spacing: 0.5px; }
-    .popup-close { background: rgba(201,168,76,0.15); color: rgba(201,168,76,0.9); border: 1px solid rgba(201,168,76,0.4); border-radius: 99px; padding: 10px 28px; font-size: 12px; cursor: pointer; letter-spacing: 2px; font-family: 'Playfair Display', serif; }
+    .popup-box { background: linear-gradient(160deg, #1C0E06, #2A1508); border: 1px solid rgba(201,168,76,0.25); border-radius: 8px; padding: 32px 24px; text-align: center; width: 78%; box-shadow: 0 16px 48px rgba(0,0,0,0.9); }
+    .popup-flame { font-size: 30px; margin-bottom: 12px; }
+    .popup-title { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.85); font-size: 22px; margin-bottom: 8px; }
+    .popup-msg { color: rgba(255,255,255,0.45); font-size: 12px; margin-bottom: 22px; line-height: 1.7; font-style: italic; }
+    .popup-close { background: rgba(201,168,76,0.1); color: rgba(201,168,76,0.85); border: 1px solid rgba(201,168,76,0.35); border-radius: 99px; padding: 10px 28px; font-size: 11px; cursor: pointer; letter-spacing: 3px; font-family: 'Playfair Display', serif; }
   </style>
 </head>
 <body>
@@ -289,64 +278,36 @@
   <div class="popup-box">
     <div class="popup-flame">🕯️</div>
     <div class="popup-title">Order Received</div>
-    <div class="popup-msg">Your order has been whispered to the kitchen.<br>We shall prepare it with care.</div>
+    <div class="popup-msg">Your order has been whispered<br>to the kitchen. We shall prepare<br>it with love and fire.</div>
     <button class="popup-close" onclick="closePopup()">PERFECT</button>
   </div>
 </div>
 
 <div id="scene">
 
-  <!-- MATCH SCREEN -->
-  <div id="match-screen" onclick="handleTap()">
-    <!-- Kitchen Background -->
-    <div class="kitchen-bg" id="kitchen-bg">
-      <div class="kb-wall">
-        <div class="kb-pot-wire kb-pot-wire-1"></div>
-        <div class="kb-pot-wire kb-pot-wire-2"></div>
-        <div class="kb-pot-wire kb-pot-wire-3"></div>
-        <div class="kb-pot kb-pot-1">🫕</div>
-        <div class="kb-pot kb-pot-2">🍳</div>
-        <div class="kb-pot kb-pot-3">🫕</div>
-        <div class="kb-shelf"></div>
-      </div>
-      <div class="kb-table">
-        <div class="kb-table-grain"></div>
-        <div class="kb-candle">
-          <div class="kb-candle-wick"></div>
-          <div class="kb-candle-body"></div>
-          <div class="kb-candle-base"></div>
-          <div class="kb-candle-glow"></div>
-        </div>
-      </div>
+  <!-- OPENING SCREEN -->
+  <div id="opening-screen" onclick="handleTap()">
+    <img class="entrance-img" id="entrance-img" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/entrance.png" alt="Entrance">
+    <div class="dark-overlay" id="dark-overlay"></div>
+    <div class="burn-overlay" id="burn-overlay"></div>
+
+    <div id="flame-container">
+      <div class="flame-el" id="flame-el"></div>
+      <div class="candle-wick"></div>
+      <div class="candle-body"></div>
+      <div class="candle-base"></div>
     </div>
 
-    <!-- Ambient Light -->
-    <div class="ambient-light" id="ambient-light"></div>
-
-    <!-- Match Stick -->
-    <div id="match-stick"></div>
-
-    <!-- Flame -->
-    <div id="flame-wrap">
-      <div class="flame" id="flame"></div>
-    </div>
-
-    <!-- Hint -->
-    <div id="match-hint">✦ tap to strike the match ✦</div>
-    <div id="tap-count"></div>
+    <div id="open-hint">✦ tap to light the candle ✦</div>
+    <div id="tap-progress"></div>
   </div>
 
-  <!-- BOOK SCREEN -->
-  <div id="book-screen">
-    <div class="bs-ambient"></div>
-    <div class="bs-table">
-      <div class="bs-candle">
-        <div class="bs-candle-flame"></div>
-        <div class="bs-candle-body"></div>
-        <div class="bs-candle-base"></div>
-      </div>
-    </div>
+  <!-- INTERIOR SCREEN -->
+  <div id="interior-screen">
+    <img class="interior-img" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/interior2.png" alt="Interior">
+    <div class="interior-vignette"></div>
 
+    <!-- BOOK -->
     <div id="book-container">
       <div class="book" id="book">
         <div class="left-page">
@@ -368,35 +329,30 @@
 
     <!-- CATEGORY GRID -->
     <div id="category-grid">
-      <div class="grid-title">Tonight's Menu</div>
-      <div class="cat-row">
-        <div class="cat-card" onclick="openSlate('Pizza','🍕')"><div class="cat-card-glow"></div><div class="cat-emoji">🍕</div><div class="cat-name">Pizza</div></div>
-        <div class="cat-card" onclick="openSlate('Pasta','🍝')"><div class="cat-card-glow"></div><div class="cat-emoji">🍝</div><div class="cat-name">Pasta</div></div>
+      <div class="grid-title">Tonight's Menu ✦</div>
+      <div class="cat-row" id="cat-row-1">
+        <div class="cat-card" onclick="openChalk('Pizza','🍕')"><div class="cat-photo"><div class="cat-emoji">🍕</div></div><div class="cat-name">Pizza</div></div>
+        <div class="cat-card" onclick="openChalk('Pasta','🍝')"><div class="cat-photo"><div class="cat-emoji">🍝</div></div><div class="cat-name">Pasta</div></div>
       </div>
-      <div class="cat-row">
-        <div class="cat-card" onclick="openSlate('Burger','🍔')"><div class="cat-card-glow"></div><div class="cat-emoji">🍔</div><div class="cat-name">Burger</div></div>
-        <div class="cat-card" onclick="openSlate('Mexican','🌮')"><div class="cat-card-glow"></div><div class="cat-emoji">🌮</div><div class="cat-name">Mexican</div></div>
+      <div class="cat-row" id="cat-row-2">
+        <div class="cat-card" onclick="openChalk('Burger','🍔')"><div class="cat-photo"><div class="cat-emoji">🍔</div></div><div class="cat-name">Burger</div></div>
+        <div class="cat-card" onclick="openChalk('Mexican','🌮')"><div class="cat-photo"><div class="cat-emoji">🌮</div></div><div class="cat-name">Mexican</div></div>
       </div>
-      <div class="cat-row">
-        <div class="cat-card" onclick="openSlate('Milkshake','🥛')"><div class="cat-card-glow"></div><div class="cat-emoji">🥛</div><div class="cat-name">Milkshake</div></div>
-        <div class="cat-card" onclick="openSlate('Thick Shake','🧋')"><div class="cat-card-glow"></div><div class="cat-emoji">🧋</div><div class="cat-name">Thick Shake</div></div>
+      <div class="cat-row" id="cat-row-3">
+        <div class="cat-card" onclick="openChalk('Milkshake','🥛')"><div class="cat-photo"><div class="cat-emoji">🥛</div></div><div class="cat-name">Milkshake</div></div>
+        <div class="cat-card" onclick="openChalk('Thick Shake','🧋')"><div class="cat-photo"><div class="cat-emoji">🧋</div></div><div class="cat-name">Thick Shake</div></div>
       </div>
-      <div class="cat-row">
-        <div class="cat-card" style="max-width:48%" onclick="openSlate('Cafe Special','⭐')"><div class="cat-card-glow"></div><div class="cat-emoji">⭐</div><div class="cat-name">Cafe Special</div></div>
+      <div class="cat-row" id="cat-row-4">
+        <div class="cat-card" style="max-width:48%" onclick="openChalk('Cafe Special','⭐')"><div class="cat-photo"><div class="cat-emoji">⭐</div></div><div class="cat-name">Cafe Special</div></div>
       </div>
     </div>
 
-    <!-- SLATE SCREEN -->
-    <div id="slate-screen">
-      <div class="slate-wrap">
-        <div class="slate-nail"></div>
-        <div class="slate-string"></div>
-        <div class="slate-board" id="slate-board">
-          <div class="chalk-tray">
-            <div class="chalk-piece"></div>
-          </div>
-        </div>
-      </div>
+    <!-- CHALKBOARD SCREEN -->
+    <div id="chalk-screen">
+      <img class="board-bg" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/board.png" alt="Board">
+      <div class="board-overlay"></div>
+      <div class="board-frame"></div>
+      <div class="board-content" id="board-content"></div>
     </div>
   </div>
 
@@ -420,62 +376,65 @@ const menuItems = [
 ];
 
 let tapCount = 0;
-let flameSize = 0;
-let matchDone = false;
+let tapDone = false;
 
 function handleTap() {
-  if (matchDone) return;
+  if (tapDone) return;
   tapCount++;
+  if (navigator.vibrate) navigator.vibrate(25);
 
-  const flame = document.getElementById('flame');
-  const hint = document.getElementById('match-hint');
-  const tapCountEl = document.getElementById('tap-count');
-  const matchStick = document.getElementById('match-stick');
-  const ambient = document.getElementById('ambient-light');
-  const kitchenBg = document.getElementById('kitchen-bg');
+  const flame = document.getElementById('flame-el');
+  const hint = document.getElementById('open-hint');
+  const progress = document.getElementById('tap-progress');
+  const img = document.getElementById('entrance-img');
+  const overlay = document.getElementById('dark-overlay');
 
-  if (navigator.vibrate) navigator.vibrate(30);
+  progress.style.display = 'block';
 
   if (tapCount === 1) {
-    // Strike match
+    flame.className = 'flame-el s1';
+    img.className = 'entrance-img glow-1';
+    overlay.className = 'dark-overlay glow-1';
     hint.textContent = '✦ again ✦';
-    matchStick.classList.add('struck');
-    flame.className = 'flame size-1 flickering';
-    ambient.className = 'ambient-light glow-1';
-    kitchenBg.classList.add('lit');
-    tapCountEl.style.display = 'block';
-    tapCountEl.textContent = '🔥 1 / 4';
+    progress.textContent = '🔥 1 / 4';
   } else if (tapCount === 2) {
-    flame.className = 'flame size-2 flickering';
-    ambient.className = 'ambient-light glow-2';
-    tapCountEl.textContent = '🔥 2 / 4';
+    flame.className = 'flame-el s2';
+    img.className = 'entrance-img glow-2';
+    overlay.className = 'dark-overlay glow-2';
     hint.textContent = '✦ more ✦';
+    progress.textContent = '🔥 2 / 4';
   } else if (tapCount === 3) {
-    flame.className = 'flame size-3 flickering';
-    ambient.className = 'ambient-light glow-3';
-    tapCountEl.textContent = '🔥 3 / 4';
+    flame.className = 'flame-el s3';
+    img.className = 'entrance-img glow-3';
+    overlay.className = 'dark-overlay glow-3';
     hint.textContent = '✦ once more ✦';
+    progress.textContent = '🔥 3 / 4';
   } else if (tapCount >= 4) {
-    matchDone = true;
-    flame.className = 'flame size-4 flickering';
-    ambient.className = 'ambient-light glow-4';
-    tapCountEl.textContent = '🔥 4 / 4';
+    tapDone = true;
+    flame.className = 'flame-el s4';
+    img.className = 'entrance-img glow-4';
+    overlay.className = 'dark-overlay glow-4';
     hint.textContent = '';
-    matchStick.classList.add('gone');
-    if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
+    progress.textContent = '';
+    if (navigator.vibrate) navigator.vibrate([30, 20, 80]);
+
+    // Burn effect
+    setTimeout(() => {
+      document.getElementById('burn-overlay').classList.add('active');
+    }, 300);
 
     setTimeout(() => {
-      document.getElementById('fade-overlay').style.transition = 'opacity 0.8s ease';
+      document.getElementById('fade-overlay').style.transition = 'opacity 0.7s ease';
       document.getElementById('fade-overlay').classList.add('fade');
-    }, 600);
+    }, 700);
 
     setTimeout(() => {
-      document.getElementById('match-screen').style.display = 'none';
-      document.getElementById('book-screen').classList.add('show');
+      document.getElementById('opening-screen').style.display = 'none';
+      document.getElementById('interior-screen').classList.add('show');
       document.getElementById('fade-overlay').classList.remove('fade');
       buildPages();
       setTimeout(startBookAnimation, 500);
-    }, 1400);
+    }, 1500);
   }
 }
 
@@ -503,6 +462,8 @@ function buildPages() {
 }
 
 function startBookAnimation() {
+  const bc = document.getElementById('book-container');
+  bc.classList.add('show');
   setTimeout(() => {
     document.getElementById('book-cover').classList.add('open');
   }, 300);
@@ -510,17 +471,31 @@ function startBookAnimation() {
     setTimeout(() => {
       const p = document.getElementById(`page-${i}`);
       if (p) p.classList.add('turned');
-    }, 900 + (i * 380));
+    }, 900 + (i * 370));
   });
   setTimeout(() => {
-    const bc = document.getElementById('book-container');
     bc.style.transition = 'opacity 0.6s ease';
     bc.style.opacity = '0';
     setTimeout(() => {
       bc.style.display = 'none';
-      document.getElementById('category-grid').classList.add('show');
+      showCategoryGrid();
     }, 600);
-  }, 900 + (categories.length * 380) + 500);
+  }, 900 + (categories.length * 370) + 500);
+}
+
+function showCategoryGrid() {
+  document.getElementById('category-grid').classList.add('show');
+  // Animate polaroids dropping in
+  [1,2,3,4].forEach((rowNum, ri) => {
+    const row = document.getElementById(`cat-row-${rowNum}`);
+    if (!row) return;
+    const cards = row.querySelectorAll('.cat-card');
+    cards.forEach((card, ci) => {
+      setTimeout(() => {
+        card.classList.add('appear');
+      }, ri * 200 + ci * 120);
+    });
+  });
 }
 
 function typeWriter(element, text, speed, callback) {
@@ -548,59 +523,58 @@ function spawnDust(element) {
   const rect = element.getBoundingClientRect();
   for (let d = 0; d < 2; d++) {
     const dust = document.createElement('div');
-    dust.className = 'chalk-dust-el';
+    dust.className = 'chalk-dust-p';
     const size = Math.random() * 3 + 1;
-    const dx = (Math.random() - 0.5) * 16 + 'px';
-    const dy = (Math.random() - 0.5) * 16 + 'px';
+    const dx = (Math.random() - 0.5) * 14 + 'px';
+    const dy = (Math.random() - 0.5) * 14 + 'px';
     dust.style.cssText = `width:${size}px;height:${size}px;left:${rect.right}px;top:${rect.top + Math.random()*rect.height}px;--dx:${dx};--dy:${dy};`;
     document.body.appendChild(dust);
     setTimeout(() => dust.remove(), 500);
   }
 }
 
-function openSlate(catName, catEmoji) {
-  const board = document.getElementById('slate-board');
-  board.innerHTML = `
-    <div class="chalk-tray"><div class="chalk-piece"></div></div>
-    <button class="slate-back-btn" onclick="closeSlate()">← back</button>
-    <div class="slate-title">${catEmoji} ${catName}</div>
-    <div class="slate-rule"></div>
+function openChalk(catName, catEmoji) {
+  const content = document.getElementById('board-content');
+  content.innerHTML = `
+    <button class="chalk-back-btn" onclick="closeChalk()">← back</button>
+    <div class="board-title">${catEmoji} ${catName}</div>
+    <div class="board-rule"></div>
   `;
   menuItems.forEach((item, i) => {
     const el = document.createElement('div');
-    el.className = 'slate-item';
-    el.id = `slate-item-${i}`;
+    el.className = 'board-item';
+    el.id = `board-item-${i}`;
     el.innerHTML = `
-      <div class="slate-item-top">
-        <div class="slate-item-name-wrap">
-          <span class="slate-item-emoji">${item.emoji}</span>
-          <span class="chalk-writing" id="slate-name-${i}"></span>
+      <div class="board-item-top">
+        <div class="board-item-left">
+          <span class="board-item-emoji">${item.emoji}</span>
+          <span class="chalk-writing" id="board-name-${i}"></span>
         </div>
-        <div class="slate-price" id="slate-price-${i}" style="opacity:0">₹${item.price}</div>
+        <div class="board-price" id="board-price-${i}" style="opacity:0">₹${item.price}</div>
       </div>
-      <div class="slate-desc" id="slate-desc-${i}" style="opacity:0">${item.desc}</div>
-      <button class="slate-order-btn" id="slate-btn-${i}" style="opacity:0" onclick="placeOrder('${item.name}')">ORDER THIS</button>
+      <div class="board-desc" id="board-desc-${i}" style="opacity:0">${item.desc}</div>
+      <button class="board-order-btn" id="board-btn-${i}" style="opacity:0" onclick="placeOrder('${item.name}')">ORDER THIS</button>
     `;
-    board.appendChild(el);
+    content.appendChild(el);
     setTimeout(() => {
       el.classList.add('show-item');
-      const nameEl = document.getElementById(`slate-name-${i}`);
+      const nameEl = document.getElementById(`board-name-${i}`);
       typeWriter(nameEl, item.name, 45, () => {
-        document.getElementById(`slate-price-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+        document.getElementById(`board-price-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
         setTimeout(() => {
-          document.getElementById(`slate-desc-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+          document.getElementById(`board-desc-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
           setTimeout(() => {
-            document.getElementById(`slate-btn-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
+            document.getElementById(`board-btn-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
           }, 200);
         }, 200);
       });
     }, 300 + (i * 900));
   });
-  document.getElementById('slate-screen').classList.add('show');
+  document.getElementById('chalk-screen').classList.add('show');
 }
 
-function closeSlate() {
-  document.getElementById('slate-screen').classList.remove('show');
+function closeChalk() {
+  document.getElementById('chalk-screen').classList.remove('show');
 }
 
 function placeOrder(name) {
