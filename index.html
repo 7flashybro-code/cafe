@@ -3,272 +3,406 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Midnight Kitchen</title>
+  <title>EMBER</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@600&family=Special+Elite&display=swap');
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Playfair Display', serif; overflow: hidden; width: 100vw; height: 100vh; background: #000; display: flex; align-items: center; justify-content: center; }
     #scene { position: relative; width: 100%; max-width: 420px; height: 100vh; overflow: hidden; background: #000; }
 
-    /* ===== FADE ===== */
+    /* FADE */
     #fade-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; opacity: 0; z-index: 500; pointer-events: none; transition: opacity 0.8s ease; }
     #fade-overlay.fade { opacity: 1; }
 
-    /* ===== OPENING SCREEN ===== */
-    #opening-screen {
+    /* ===== EMBER SCREEN ===== */
+    #ember-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 10; cursor: pointer;
+      background: #000; z-index: 10;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-end;
-      padding-bottom: 18%;
+      align-items: center; justify-content: center;
     }
 
-    /* ENTRANCE IMAGE */
-    .entrance-img {
+    /* BG IMAGE */
+    .ember-bg {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center;
-      filter: brightness(0.35) saturate(0.8);
-      transition: filter 0.4s ease;
+      object-fit: cover;
+      filter: brightness(0) saturate(0);
+      transition: filter 1.5s ease;
     }
-    .entrance-img.glow-1 { filter: brightness(0.45) saturate(0.9); }
-    .entrance-img.glow-2 { filter: brightness(0.55) saturate(1.0); }
-    .entrance-img.glow-3 { filter: brightness(0.65) saturate(1.1); }
-    .entrance-img.glow-4 { filter: brightness(0.85) saturate(1.2); }
+    .ember-bg.reveal-1 { filter: brightness(0.1) saturate(0.3); }
+    .ember-bg.reveal-2 { filter: brightness(0.2) saturate(0.5); }
+    .ember-bg.reveal-3 { filter: brightness(0.35) saturate(0.7); }
+    .ember-bg.reveal-4 { filter: brightness(0.55) saturate(0.9); }
+    .ember-bg.reveal-5 { filter: brightness(0.75) saturate(1.1); }
 
-    /* DARK OVERLAY */
-    .dark-overlay {
+    /* EMBER GLOW BG */
+    .ember-glow-bg {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0) 0%, rgba(0,0,0,0.7) 60%);
-      transition: background 0.4s ease;
-      z-index: 1;
-    }
-    .dark-overlay.glow-1 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.08) 0%, rgba(0,0,0,0.65) 60%); }
-    .dark-overlay.glow-2 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.18) 0%, rgba(0,0,0,0.55) 60%); }
-    .dark-overlay.glow-3 { background: radial-gradient(ellipse at 50% 60%, rgba(255,140,30,0.30) 0%, rgba(0,0,0,0.45) 60%); }
-    .dark-overlay.glow-4 { background: radial-gradient(ellipse at 50% 60%, rgba(255,160,50,0.50) 0%, rgba(0,0,0,0.2) 70%); }
-
-    /* FLAME */
-    #flame-container {
-      position: absolute; z-index: 5;
-      bottom: 28%; left: 50%; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .flame-el {
-      width: 0; height: 0;
-      border-radius: 50% 50% 20% 20%;
-      transition: all 0.35s ease;
-      filter: blur(0.5px);
-    }
-    .flame-el.s1 { width: 18px; height: 32px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 25%, #FF8C00 55%, #FF4500 80%, transparent 100%); box-shadow: 0 0 12px #FF8C00, 0 0 30px rgba(255,140,0,0.5); animation: flicker 0.7s ease-in-out infinite; }
-    .flame-el.s2 { width: 24px; height: 48px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 20%, #FF8C00 50%, #FF4500 75%, transparent 100%); box-shadow: 0 0 20px #FF8C00, 0 0 50px rgba(255,140,0,0.6); animation: flicker 0.65s ease-in-out infinite; }
-    .flame-el.s3 { width: 32px; height: 65px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 18%, #FF8C00 48%, #FF4500 70%, transparent 100%); box-shadow: 0 0 35px #FF8C00, 0 0 80px rgba(255,140,0,0.7); animation: flicker 0.6s ease-in-out infinite; }
-    .flame-el.s4 { width: 44px; height: 88px; background: radial-gradient(ellipse at bottom, #fff 0%, #FFD700 15%, #FF8C00 45%, #FF4500 65%, transparent 100%); box-shadow: 0 0 55px #FF8C00, 0 0 120px rgba(255,140,0,0.8), 0 0 200px rgba(255,100,0,0.4); animation: flicker 0.55s ease-in-out infinite; }
-    @keyframes flicker {
-      0%,100% { transform: scaleX(1) scaleY(1) rotate(-1deg); }
-      25% { transform: scaleX(0.90) scaleY(1.05) rotate(1.5deg); }
-      50% { transform: scaleX(1.06) scaleY(0.95) rotate(-0.5deg); }
-      75% { transform: scaleX(0.94) scaleY(1.03) rotate(2deg); }
+      background: radial-gradient(ellipse at 50% 50%, rgba(255,80,0,0) 0%, transparent 70%);
+      transition: background 0.3s ease;
+      z-index: 1; pointer-events: none;
     }
 
-    /* CANDLE BODY */
-    .candle-body {
-      width: 14px; height: 55px;
-      background: linear-gradient(180deg, #F5E6C8, #E8D4A8, #D4BC88);
-      border-radius: 2px; margin-top: -2px;
-      box-shadow: inset -3px 0 6px rgba(0,0,0,0.2);
+    /* EMBER CORE */
+    #ember-core {
+      position: relative; z-index: 5;
+      width: 60px; height: 60px;
+      cursor: pointer; user-select: none;
+      -webkit-user-select: none;
     }
-    .candle-base { width: 28px; height: 7px; background: linear-gradient(180deg, #8B5E3C, #6B3A1F); border-radius: 2px; }
-    .candle-wick { width: 2px; height: 10px; background: #2A1508; margin-bottom: -2px; }
+    .ember-circle {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #FF8C00, #CC3300, #660000);
+      box-shadow: 0 0 8px #FF4500, 0 0 0px rgba(255,100,0,0);
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .ember-circle::before {
+      content: '';
+      position: absolute; top: 20%; left: 20%;
+      width: 30%; height: 30%;
+      background: rgba(255,220,100,0.6);
+      border-radius: 50%;
+      filter: blur(3px);
+    }
+
+    /* SPARK */
+    .spark {
+      position: fixed; pointer-events: none;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: #FFD700;
+      animation: spark-fly 0.8s ease forwards;
+      z-index: 999;
+    }
+    @keyframes spark-fly {
+      0% { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--sx), var(--sy)) scale(0); }
+    }
+
+    /* HOLD PROGRESS RING */
+    #hold-ring {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px; height: 80px;
+      z-index: 4; pointer-events: none;
+    }
+    .ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: rgba(255,100,0,0.15); stroke-width: 3; }
+    .ring-progress { fill: none; stroke: #FF6B00; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.1s linear; }
 
     /* HINT */
-    #open-hint {
+    #ember-hint {
       position: relative; z-index: 5;
       font-family: 'Dancing Script', cursive;
-      font-size: 15px; color: rgba(201,168,76,0.75);
-      letter-spacing: 1px; text-align: center;
+      font-size: 16px; color: rgba(201,168,76,0.6);
+      letter-spacing: 1px; margin-top: 28px;
       animation: hint-pulse 2s ease-in-out infinite;
-      margin-top: 20px;
+      text-align: center;
     }
-    #tap-progress {
-      position: relative; z-index: 5;
-      font-family: 'Playfair Display', serif;
-      font-size: 12px; color: rgba(255,180,60,0.8);
-      letter-spacing: 4px; text-align: center;
-      margin-top: 8px; display: none;
-    }
-    @keyframes hint-pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+    @keyframes hint-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
 
-    /* BURN TRANSITION */
-    .burn-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 8; pointer-events: none; opacity: 0;
-      background: radial-gradient(ellipse at 50% 55%, rgba(255,100,0,0.9) 0%, rgba(255,50,0,0.6) 30%, transparent 65%);
-      transition: opacity 0.4s ease;
-    }
-    .burn-overlay.active { opacity: 1; }
-
-    /* ===== INTERIOR SCREEN ===== */
-    #interior-screen {
+    /* ===== MENU SCREEN ===== */
+    #menu-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       display: none; z-index: 2; overflow: hidden;
     }
-    #interior-screen.show { display: block; }
-    .interior-img {
+    #menu-screen.show { display: block; }
+
+    .menu-bg {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center;
-      filter: brightness(0.55) saturate(0.9);
+      object-fit: cover; filter: brightness(0.4) saturate(0.8);
     }
-    .interior-vignette {
+    .menu-vignette {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.5) 100%);
+      background: radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(0,0,0,0.65) 100%);
     }
 
-    /* ===== BOOK ===== */
-    #book-container {
-      position: absolute; top: 8%; left: 50%;
-      transform: translateX(-50%);
-      width: 88%; z-index: 10; display: none;
+    /* VINYL RECORD */
+    #vinyl-wrap {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -52%);
+      z-index: 5;
     }
-    #book-container.show { display: block; }
-    .book { position: relative; width: 100%; height: 230px; perspective: 1200px; }
-    .book-cover {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(160deg, #1C0E06, #2A1508, #3D2010);
-      border-radius: 3px 10px 10px 3px;
-      border: 1px solid rgba(201,168,76,0.2);
-      display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 6px;
-      box-shadow: -6px 4px 24px rgba(0,0,0,0.9), 4px 4px 16px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.5);
-      z-index: 5; transition: transform 1s cubic-bezier(0.4,0,0.2,1);
-      transform-style: preserve-3d;
+    #vinyl {
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, #1A1A1A 0%, #1A1A1A 12%, transparent 12%),
+        repeating-radial-gradient(circle at 50% 50%, #111 0px, #111 1px, #1C1C1C 1px, #1C1C1C 3px);
+      box-shadow: 0 0 40px rgba(0,0,0,0.9), 0 8px 32px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+      position: relative;
+      cursor: grab;
+      transition: transform 0.1s linear;
+      user-select: none;
     }
-    .book-cover.open { transform: rotateY(-180deg); transform-origin: left center; }
-    .book-spine { position: absolute; left: 0; top: 0; width: 16px; height: 100%; background: linear-gradient(180deg, #0D0604, #2A1508, #0D0604); border-radius: 3px 0 0 3px; border-right: 1px solid rgba(201,168,76,0.1); }
-    .book-ornament { color: rgba(201,168,76,0.6); font-size: 14px; }
-    .book-title-text { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.75); font-size: 18px; letter-spacing: 1px; text-align: center; padding: 0 20px; }
-    .book-rule { width: 50px; height: 1px; background: rgba(201,168,76,0.25); }
-    .book-subtitle-text { font-family: 'Playfair Display', serif; color: rgba(201,168,76,0.35); font-size: 8px; letter-spacing: 4px; }
-    .left-page { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(135deg, #F5ECD8, #EDE0C4); border: 1px solid #D4C0A0; border-right: none; border-radius: 6px 0 0 6px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; padding: 16px; }
-    .left-page-title { font-family: 'Dancing Script', cursive; font-size: 15px; color: #4A2A10; }
-    .left-page-line { width: 40px; height: 1px; background: rgba(74,42,16,0.3); }
-    .left-page-text { font-size: 9px; color: rgba(74,42,16,0.4); letter-spacing: 1px; text-align: center; font-style: italic; line-height: 1.6; }
-    .book-divider { position: absolute; top: 0; left: 50%; width: 4px; height: 100%; background: linear-gradient(180deg, #0D0604, #3D2010, #0D0604); z-index: 2; box-shadow: -3px 0 8px rgba(0,0,0,0.5), 3px 0 8px rgba(0,0,0,0.5); }
-    .page { position: absolute; top: 0; width: 50%; height: 100%; transform-origin: left center; transform-style: preserve-3d; transition: transform 0.42s ease-in-out; left: 50%; }
-    .page-front, .page-back { position: absolute; top: 0; left: 0; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; border-radius: 0 6px 6px 0; padding: 10px; }
-    .page-front { background: linear-gradient(135deg, #F5ECD8, #EDE0C4); border: 1px solid #D4C0A0; border-left: none; }
-    .page-back { background: linear-gradient(135deg, #EDE0C4, #F5ECD8); border: 1px solid #D4C0A0; border-left: none; transform: rotateY(180deg); }
-    .page.turned { transform: rotateY(-180deg); }
-    .page-emoji { font-size: 22px; }
-    .page-name { font-family: 'Dancing Script', cursive; font-size: 12px; color: #3A1A08; text-align: center; }
-    .page-rule { width: 28px; height: 1px; background: rgba(74,42,16,0.2); }
+    #vinyl::before {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #C9A84C 0%, #8B6914 40%, #5A4010 100%);
+      box-shadow: 0 0 10px rgba(201,168,76,0.4);
+    }
+    #vinyl::after {
+      content: '';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #000;
+      z-index: 2;
+    }
 
-    /* ===== POLAROID CATEGORY GRID ===== */
-    #category-grid {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      display: none; z-index: 10;
-      overflow-y: auto; padding: 14px 10px 70px;
+    /* VINYL LABEL TRACKS */
+    .vinyl-track {
+      position: absolute; top: 50%; left: 50%;
+      transform-origin: 0 0;
+      pointer-events: none;
     }
-    #category-grid.show { display: block; }
-    .grid-title {
-      font-family: 'Dancing Script', cursive;
-      color: rgba(201,168,76,0.9); font-size: 22px;
-      text-align: center; margin-bottom: 12px;
-      text-shadow: 0 0 20px rgba(201,168,76,0.3);
+    .track-label {
+      position: absolute;
+      font-family: 'Special Elite', cursive;
+      font-size: 9px; color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      letter-spacing: 1px;
     }
-    .cat-row { display: flex; gap: 8px; margin-bottom: 8px; justify-content: center; }
 
-    /* POLAROID STYLE */
-    .cat-card {
-      flex: 1; max-width: 48%;
-      background: #F8F0E0;
+    /* NEEDLE */
+    #needle-wrap {
+      position: absolute;
+      top: 10%; right: 10%;
+      transform-origin: top right;
+      z-index: 6;
+      transition: transform 0.4s ease;
+    }
+    .needle-arm {
+      width: 3px; height: 100px;
+      background: linear-gradient(180deg, #C9A84C, #8B6914);
       border-radius: 2px;
-      padding: 10px 6px 20px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 6px; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.4);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      transform: rotate(var(--r, 0deg));
-      opacity: 0;
+      transform: rotate(25deg);
+      transform-origin: top center;
+      position: relative;
     }
-    .cat-card:nth-child(1) { --r: -1.5deg; }
-    .cat-card:nth-child(2) { --r: 1.8deg; }
-    .cat-card:active { transform: rotate(0deg) scale(0.96); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-    .cat-card.appear { animation: polaroid-drop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
-    @keyframes polaroid-drop {
-      0% { opacity: 0; transform: rotate(var(--r,0deg)) translateY(-30px) scale(0.8); }
-      100% { opacity: 1; transform: rotate(var(--r,0deg)) translateY(0) scale(1); }
+    .needle-tip {
+      position: absolute; bottom: -6px; left: 50%;
+      transform: translateX(-50%);
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #C9A84C;
+      box-shadow: 0 0 6px rgba(201,168,76,0.6);
     }
-    .cat-photo { width: 100%; aspect-ratio: 1; background: rgba(0,0,0,0.06); border-radius: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 2px; }
-    .cat-emoji { font-size: 32px; }
-    .cat-name { font-family: 'Dancing Script', cursive; font-size: 13px; color: #3A1A08; letter-spacing: 0.5px; text-align: center; }
+    .needle-pivot {
+      width: 14px; height: 14px;
+      background: radial-gradient(circle, #E0C060, #8B6914);
+      border-radius: 50%;
+      margin: 0 auto;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
 
-    /* ===== CHALKBOARD SCREEN ===== */
-    #chalk-screen {
+    /* CATEGORY LABELS ON VINYL */
+    .cat-segment {
+      position: absolute; top: 50%; left: 50%;
+      width: 100px; height: 2px;
+      transform-origin: left center;
+      z-index: 3;
+    }
+    .cat-segment-label {
+      position: absolute; right: -2px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Special Elite', cursive;
+      font-size: 8px; color: rgba(255,255,255,0.4);
+      white-space: nowrap; letter-spacing: 0.5px;
+    }
+
+    /* SELECTED CATEGORY DISPLAY */
+    #selected-display {
+      position: absolute; bottom: 22%; left: 0; right: 0;
+      text-align: center; z-index: 5;
+    }
+    .selected-emoji { font-size: 32px; margin-bottom: 4px; }
+    .selected-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 20px; color: rgba(201,168,76,0.9);
+      text-shadow: 0 0 20px rgba(201,168,76,0.4);
+      letter-spacing: 1px;
+    }
+    .selected-hint {
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      letter-spacing: 2px; margin-top: 6px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* ENTER BUTTON */
+    #enter-category-btn {
+      position: absolute; bottom: 10%; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(201,168,76,0.1);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: rgba(201,168,76,0.85);
+      padding: 11px 36px; font-size: 11px;
+      font-weight: 600; letter-spacing: 4px;
+      border-radius: 2px; cursor: pointer;
+      font-family: 'Playfair Display', serif;
+      z-index: 5;
+      animation: hint-pulse 2s ease-in-out infinite;
+      display: none;
+    }
+
+    /* VINYL SPIN HINT */
+    #vinyl-hint {
+      position: absolute; top: 8%; left: 0; right: 0;
+      text-align: center; z-index: 5;
+      font-family: 'Dancing Script', cursive;
+      font-size: 15px; color: rgba(201,168,76,0.6);
+      letter-spacing: 1px;
+      animation: hint-pulse 2s ease-in-out infinite;
+    }
+
+    /* ===== PRICE TAG SCREEN ===== */
+    #tag-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 20;
+      z-index: 20; overflow: hidden;
       transform: translateX(100%);
       transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
-      overflow: hidden;
     }
-    #chalk-screen.show { transform: translateX(0); }
+    #tag-screen.show { transform: translateX(0); }
 
-    .board-bg {
+    .tag-bg {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center;
-      filter: brightness(0.7) saturate(0.8);
+      object-fit: cover; filter: brightness(0.35) saturate(0.7);
     }
-    .board-overlay {
+    .tag-vignette {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(10,25,15,0.55);
-    }
-    .board-content {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      padding: 16px 18px 24px; overflow-y: auto;
+      background: rgba(5,3,1,0.6);
     }
 
-    /* WOODEN FRAME BORDER */
-    .board-frame {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      border: 12px solid transparent;
-      border-image: linear-gradient(135deg, #8B5E3C, #6B3A1F, #A0714F, #6B3A1F) 1;
-      pointer-events: none; z-index: 2;
+    .tag-header {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: 16px 18px 12px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 5;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .tag-back-btn {
+      background: none; border: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 18px; cursor: pointer;
+      font-family: 'Playfair Display', serif;
+      padding: 4px;
+    }
+    .tag-screen-title {
+      font-family: 'Dancing Script', cursive;
+      font-size: 22px; color: rgba(201,168,76,0.85);
+      letter-spacing: 1px;
     }
 
-    .chalk-back-btn { display: flex; align-items: center; gap: 6px; background: none; border: none; color: rgba(255,255,255,0.55); font-size: 12px; cursor: pointer; margin-bottom: 14px; font-family: 'Playfair Display', serif; letter-spacing: 1px; padding: 4px 0; position: relative; z-index: 3; }
-    .chalk-back-btn:active { opacity: 0.6; }
+    /* PRICE TAGS */
+    #tags-container {
+      position: absolute; top: 70px; left: 0; right: 0; bottom: 0;
+      overflow-y: auto; padding: 16px 20px 40px;
+      z-index: 5;
+    }
 
-    .board-title { font-family: 'Dancing Script', cursive; font-size: 26px; color: #fff; text-align: center; letter-spacing: 2px; margin-bottom: 4px; text-shadow: 0 0 10px rgba(255,255,255,0.15); opacity: 0; animation: chalk-appear 0.5s ease forwards; position: relative; z-index: 3; }
-    .board-rule { width: 65%; height: 1px; background: rgba(255,255,255,0.2); margin: 0 auto 16px; opacity: 0; animation: chalk-appear 0.5s ease 0.2s forwards; position: relative; z-index: 3; }
+    .price-tag {
+      position: relative;
+      background: linear-gradient(160deg, #F5ECD8, #EDE0C4, #F0E8D0);
+      border-radius: 4px 4px 4px 4px;
+      padding: 14px 16px 16px;
+      margin-bottom: 20px;
+      box-shadow: 2px 4px 16px rgba(0,0,0,0.7), -1px -1px 4px rgba(0,0,0,0.3);
+      transform: translateX(120%) rotate(2deg);
+      opacity: 0;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+    .price-tag:nth-child(2) { transform: translateX(120%) rotate(-1.5deg); }
+    .price-tag:nth-child(3) { transform: translateX(120%) rotate(1deg); }
+    .price-tag.swing-in { animation: tag-swing 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .price-tag:nth-child(1).swing-in { animation-delay: 0s; }
+    .price-tag:nth-child(2).swing-in { animation-delay: 0.2s; }
+    .price-tag:nth-child(3).swing-in { animation-delay: 0.4s; }
 
-    .board-item { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px dashed rgba(255,255,255,0.12); opacity: 0; position: relative; z-index: 3; }
-    .board-item:last-child { border-bottom: none; margin-bottom: 0; }
-    .board-item-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 5px; gap: 8px; }
-    .board-item-left { display: flex; align-items: center; gap: 8px; flex: 1; }
-    .board-item-emoji { font-size: 20px; flex-shrink: 0; }
-    .board-item-name { font-family: 'Dancing Script', cursive; font-size: 19px; color: #fff; line-height: 1.1; }
-    .board-price { border: 1px solid rgba(201,168,76,0.45); color: rgba(201,168,76,0.85); font-size: 12px; padding: 3px 10px; border-radius: 99px; white-space: nowrap; font-family: 'Playfair Display', serif; flex-shrink: 0; }
-    .board-desc { font-size: 11px; color: rgba(255,255,255,0.42); font-style: italic; margin-bottom: 11px; line-height: 1.6; font-family: 'Playfair Display', serif; }
-    .board-order-btn { width: 100%; padding: 10px; background: rgba(201,168,76,0.07); border: 1px solid rgba(201,168,76,0.28); color: rgba(201,168,76,0.8); border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: 3px; cursor: pointer; font-family: 'Playfair Display', serif; transition: all 0.2s; }
-    .board-order-btn:active { background: rgba(201,168,76,0.16); }
+    @keyframes tag-swing {
+      0% { opacity: 0; transform: translateX(120%) rotate(var(--rot, 2deg)); }
+      60% { opacity: 1; transform: translateX(-5%) rotate(calc(var(--rot, 2deg) * -0.5)); }
+      80% { transform: translateX(2%) rotate(calc(var(--rot, 2deg) * 0.3)); }
+      100% { opacity: 1; transform: translateX(0) rotate(var(--rot, 2deg)); }
+    }
 
-    @keyframes chalk-appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    .board-item.show-item { animation: chalk-appear 0.4s ease forwards; }
+    /* TAG HOLE */
+    .tag-hole {
+      position: absolute; top: -1px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #000;
+      border: 1px solid rgba(0,0,0,0.3);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .tag-string {
+      position: absolute; top: -24px; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 24px;
+      background: rgba(100,60,20,0.6);
+    }
+    .tag-hook {
+      position: absolute; top: -30px; left: 50%;
+      transform: translateX(-50%);
+      width: 20px; height: 10px;
+      border-top: 2px solid rgba(100,60,20,0.5);
+      border-radius: 50% 50% 0 0;
+    }
 
-    .chalk-writing { display: inline; }
-    .chalk-cursor { display: inline-block; width: 1.5px; height: 19px; background: rgba(255,255,255,0.75); margin-left: 1px; vertical-align: middle; animation: blink-cur 0.5s ease infinite; }
-    @keyframes blink-cur { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
-    .chalk-dust-p { position: fixed; pointer-events: none; border-radius: 50%; background: rgba(255,255,255,0.55); animation: dust-f 0.5s ease forwards; z-index: 999; }
-    @keyframes dust-f { 0% { opacity: 0.7; transform: scale(1); } 100% { opacity: 0; transform: scale(0.2) translate(var(--dx), var(--dy)); } }
+    /* TAG CONTENT */
+    .tag-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed rgba(74,42,16,0.25); }
+    .tag-emoji-name { display: flex; align-items: center; gap: 8px; }
+    .tag-emoji { font-size: 22px; }
+    .tag-name { font-family: 'Special Elite', cursive; font-size: 15px; color: #3A1A08; line-height: 1.2; }
+    .tag-price { font-family: 'Dancing Script', cursive; font-size: 20px; color: #8B0000; font-weight: bold; }
+    .tag-desc { font-size: 10px; color: rgba(74,42,16,0.55); font-style: italic; line-height: 1.6; margin-bottom: 10px; font-family: 'Playfair Display', serif; }
+
+    /* TEAR LINE */
+    .tag-tear-line {
+      border-top: 2px dashed rgba(74,42,16,0.2);
+      margin: 0 -16px 10px;
+      position: relative;
+    }
+    .tag-tear-line::before { content: '✂'; position: absolute; left: -8px; top: -10px; font-size: 12px; color: rgba(74,42,16,0.25); }
+
+    .tag-order-btn {
+      width: 100%; padding: 9px;
+      background: rgba(139,0,0,0.08);
+      border: 1px dashed rgba(139,0,0,0.35);
+      color: rgba(139,0,0,0.75);
+      border-radius: 2px; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px;
+      cursor: pointer; font-family: 'Special Elite', cursive;
+      transition: all 0.2s;
+    }
+    .tag-order-btn:active { background: rgba(139,0,0,0.15); transform: scale(0.98); }
+
+    /* TEAR ANIMATION */
+    .price-tag.tearing {
+      animation: tear-apart 0.4s ease forwards;
+    }
+    @keyframes tear-apart {
+      0% { transform: rotate(var(--rot,2deg)) scale(1); }
+      30% { transform: rotate(var(--rot,2deg)) scale(1.02) translateX(-3px); }
+      60% { transform: rotate(calc(var(--rot,2deg) + 5deg)) scale(0.98) translateX(5px); opacity: 1; }
+      100% { transform: rotate(15deg) scale(0.8) translateY(20px); opacity: 0; }
+    }
 
     /* POPUP */
-    #order-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 600; display: none; align-items: center; justify-content: center; }
+    #order-popup { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 600; display: none; align-items: center; justify-content: center; }
     #order-popup.show { display: flex; }
-    .popup-box { background: linear-gradient(160deg, #1C0E06, #2A1508); border: 1px solid rgba(201,168,76,0.25); border-radius: 8px; padding: 32px 24px; text-align: center; width: 78%; box-shadow: 0 16px 48px rgba(0,0,0,0.9); }
-    .popup-flame { font-size: 30px; margin-bottom: 12px; }
+    .popup-box { background: linear-gradient(160deg, #1C0E06, #2A1508); border: 1px solid rgba(201,168,76,0.2); border-radius: 4px; padding: 32px 24px; text-align: center; width: 78%; box-shadow: 0 16px 48px rgba(0,0,0,0.9); }
+    .popup-ember { font-size: 30px; margin-bottom: 12px; }
     .popup-title { font-family: 'Dancing Script', cursive; color: rgba(201,168,76,0.85); font-size: 22px; margin-bottom: 8px; }
-    .popup-msg { color: rgba(255,255,255,0.45); font-size: 12px; margin-bottom: 22px; line-height: 1.7; font-style: italic; }
-    .popup-close { background: rgba(201,168,76,0.1); color: rgba(201,168,76,0.85); border: 1px solid rgba(201,168,76,0.35); border-radius: 99px; padding: 10px 28px; font-size: 11px; cursor: pointer; letter-spacing: 3px; font-family: 'Playfair Display', serif; }
+    .popup-msg { color: rgba(255,255,255,0.4); font-size: 11px; margin-bottom: 22px; line-height: 1.8; font-style: italic; letter-spacing: 0.5px; }
+    .popup-close { background: none; color: rgba(201,168,76,0.7); border: 1px solid rgba(201,168,76,0.3); border-radius: 99px; padding: 10px 28px; font-size: 11px; cursor: pointer; letter-spacing: 3px; font-family: 'Playfair Display', serif; }
   </style>
 </head>
 <body>
@@ -276,83 +410,74 @@
 <div id="fade-overlay"></div>
 <div id="order-popup">
   <div class="popup-box">
-    <div class="popup-flame">🕯️</div>
-    <div class="popup-title">Order Received</div>
-    <div class="popup-msg">Your order has been whispered<br>to the kitchen. We shall prepare<br>it with love and fire.</div>
+    <div class="popup-ember">🔥</div>
+    <div class="popup-title">Order Placed</div>
+    <div class="popup-msg">Your selection has been torn from the board<br>and sent straight to the kitchen.</div>
     <button class="popup-close" onclick="closePopup()">PERFECT</button>
   </div>
 </div>
 
 <div id="scene">
 
-  <!-- OPENING SCREEN -->
-  <div id="opening-screen" onclick="handleTap()">
-    <img class="entrance-img" id="entrance-img" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/entrance.png" alt="Entrance">
-    <div class="dark-overlay" id="dark-overlay"></div>
-    <div class="burn-overlay" id="burn-overlay"></div>
+  <!-- EMBER SCREEN -->
+  <div id="ember-screen">
+    <img class="ember-bg" id="ember-bg" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/entrance.png" alt="">
+    <div class="ember-glow-bg" id="ember-glow-bg"></div>
 
-    <div id="flame-container">
-      <div class="flame-el" id="flame-el"></div>
-      <div class="candle-wick"></div>
-      <div class="candle-body"></div>
-      <div class="candle-base"></div>
+    <div id="hold-ring">
+      <svg class="ring-svg" viewBox="0 0 80 80">
+        <circle class="ring-track" cx="40" cy="40" r="35"/>
+        <circle class="ring-progress" id="ring-progress" cx="40" cy="40" r="35"/>
+      </svg>
     </div>
 
-    <div id="open-hint">✦ tap to light the candle ✦</div>
-    <div id="tap-progress"></div>
+    <div id="ember-core"
+      onmousedown="startHold(event)" onmouseup="endHold()" onmouseleave="endHold()"
+      ontouchstart="startHold(event)" ontouchend="endHold()" ontouchcancel="endHold()">
+      <div class="ember-circle" id="ember-circle"></div>
+    </div>
+
+    <div id="ember-hint">hold the ember to ignite</div>
   </div>
 
-  <!-- INTERIOR SCREEN -->
-  <div id="interior-screen">
-    <img class="interior-img" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/interior2.png" alt="Interior">
-    <div class="interior-vignette"></div>
+  <!-- MENU SCREEN -->
+  <div id="menu-screen">
+    <img class="menu-bg" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/interior2.png" alt="">
+    <div class="menu-vignette"></div>
 
-    <!-- BOOK -->
-    <div id="book-container">
-      <div class="book" id="book">
-        <div class="left-page">
-          <div class="left-page-title">Tonight's Menu</div>
-          <div class="left-page-line"></div>
-          <div class="left-page-text">crafted with<br>love & fire</div>
-        </div>
-        <div class="book-divider"></div>
-        <div class="book-cover" id="book-cover">
-          <div class="book-spine"></div>
-          <div class="book-ornament">✦</div>
-          <div class="book-title-text">The Midnight Kitchen</div>
-          <div class="book-rule"></div>
-          <div class="book-subtitle-text">RECIPES & SECRETS</div>
-          <div class="book-ornament">✦</div>
-        </div>
+    <div id="vinyl-hint">spin the record to explore</div>
+
+    <div id="vinyl-wrap">
+      <div id="vinyl"
+        onmousedown="startSpin(event)" onmousemove="doSpin(event)" onmouseup="endSpin()" onmouseleave="endSpin()"
+        ontouchstart="startSpin(event)" ontouchmove="doSpin(event)" ontouchend="endSpin()">
       </div>
     </div>
 
-    <!-- CATEGORY GRID -->
-    <div id="category-grid">
-      <div class="grid-title">Tonight's Menu ✦</div>
-      <div class="cat-row" id="cat-row-1">
-        <div class="cat-card" onclick="openChalk('Pizza','🍕')"><div class="cat-photo"><div class="cat-emoji">🍕</div></div><div class="cat-name">Pizza</div></div>
-        <div class="cat-card" onclick="openChalk('Pasta','🍝')"><div class="cat-photo"><div class="cat-emoji">🍝</div></div><div class="cat-name">Pasta</div></div>
-      </div>
-      <div class="cat-row" id="cat-row-2">
-        <div class="cat-card" onclick="openChalk('Burger','🍔')"><div class="cat-photo"><div class="cat-emoji">🍔</div></div><div class="cat-name">Burger</div></div>
-        <div class="cat-card" onclick="openChalk('Mexican','🌮')"><div class="cat-photo"><div class="cat-emoji">🌮</div></div><div class="cat-name">Mexican</div></div>
-      </div>
-      <div class="cat-row" id="cat-row-3">
-        <div class="cat-card" onclick="openChalk('Milkshake','🥛')"><div class="cat-photo"><div class="cat-emoji">🥛</div></div><div class="cat-name">Milkshake</div></div>
-        <div class="cat-card" onclick="openChalk('Thick Shake','🧋')"><div class="cat-photo"><div class="cat-emoji">🧋</div></div><div class="cat-name">Thick Shake</div></div>
-      </div>
-      <div class="cat-row" id="cat-row-4">
-        <div class="cat-card" style="max-width:48%" onclick="openChalk('Cafe Special','⭐')"><div class="cat-photo"><div class="cat-emoji">⭐</div></div><div class="cat-name">Cafe Special</div></div>
-      </div>
+    <div id="needle-wrap">
+      <div class="needle-pivot"></div>
+      <div class="needle-arm"><div class="needle-tip"></div></div>
     </div>
 
-    <!-- CHALKBOARD SCREEN -->
-    <div id="chalk-screen">
-      <img class="board-bg" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/board.png" alt="Board">
-      <div class="board-overlay"></div>
-      <div class="board-frame"></div>
-      <div class="board-content" id="board-content"></div>
+    <div id="selected-display">
+      <div class="selected-emoji" id="selected-emoji">🎵</div>
+      <div class="selected-name" id="selected-name">Spin to select</div>
+      <div class="selected-hint">drag the record</div>
+    </div>
+
+    <button id="enter-category-btn" onclick="openTags()">VIEW MENU</button>
+
+    <!-- TAG SCREEN -->
+    <div id="tag-screen">
+      <img class="tag-bg" src="https://raw.githubusercontent.com/7flashybro-code/cafe/main/interior2.png" alt="">
+      <div class="tag-vignette"></div>
+
+      <div class="tag-header">
+        <button class="tag-back-btn" onclick="closeTags()">←</button>
+        <div class="tag-screen-title" id="tag-screen-title">Menu</div>
+      </div>
+
+      <div id="tags-container"></div>
     </div>
   </div>
 
@@ -370,215 +495,256 @@ const categories = [
 ];
 
 const menuItems = [
-  { name: 'Classic Special', emoji: '✨', price: 249, desc: 'Our signature dish, slow cooked and served with intention.' },
-  { name: "Chef's Secret",   emoji: '🔥', price: 299, desc: 'A recipe passed down through generations. Order with trust.' },
+  { name: 'Classic Special', emoji: '✨', price: 249, desc: 'Our signature dish. Slow cooked, served with intention.' },
+  { name: "Chef's Secret",   emoji: '🔥', price: 299, desc: 'A recipe passed through generations. Order with trust.' },
   { name: 'House Favourite', emoji: '🕯️', price: 199, desc: 'Every table orders this. There is a reason for that.' },
 ];
 
-let tapCount = 0;
-let tapDone = false;
+// ===== EMBER HOLD =====
+let holdTimer = null;
+let holdProgress = 0;
+let holdInterval = null;
+let holdDone = false;
+let sparkInterval = null;
 
-function handleTap() {
-  if (tapDone) return;
-  tapCount++;
-  if (navigator.vibrate) navigator.vibrate(25);
+function startHold(e) {
+  e.preventDefault();
+  if (holdDone) return;
+  if (navigator.vibrate) navigator.vibrate(20);
 
-  const flame = document.getElementById('flame-el');
-  const hint = document.getElementById('open-hint');
-  const progress = document.getElementById('tap-progress');
-  const img = document.getElementById('entrance-img');
-  const overlay = document.getElementById('dark-overlay');
-
-  progress.style.display = 'block';
-
-  if (tapCount === 1) {
-    flame.className = 'flame-el s1';
-    img.className = 'entrance-img glow-1';
-    overlay.className = 'dark-overlay glow-1';
-    hint.textContent = '✦ again ✦';
-    progress.textContent = '🔥 1 / 4';
-  } else if (tapCount === 2) {
-    flame.className = 'flame-el s2';
-    img.className = 'entrance-img glow-2';
-    overlay.className = 'dark-overlay glow-2';
-    hint.textContent = '✦ more ✦';
-    progress.textContent = '🔥 2 / 4';
-  } else if (tapCount === 3) {
-    flame.className = 'flame-el s3';
-    img.className = 'entrance-img glow-3';
-    overlay.className = 'dark-overlay glow-3';
-    hint.textContent = '✦ once more ✦';
-    progress.textContent = '🔥 3 / 4';
-  } else if (tapCount >= 4) {
-    tapDone = true;
-    flame.className = 'flame-el s4';
-    img.className = 'entrance-img glow-4';
-    overlay.className = 'dark-overlay glow-4';
-    hint.textContent = '';
-    progress.textContent = '';
-    if (navigator.vibrate) navigator.vibrate([30, 20, 80]);
-
-    // Burn effect
-    setTimeout(() => {
-      document.getElementById('burn-overlay').classList.add('active');
-    }, 300);
-
-    setTimeout(() => {
-      document.getElementById('fade-overlay').style.transition = 'opacity 0.7s ease';
-      document.getElementById('fade-overlay').classList.add('fade');
-    }, 700);
-
-    setTimeout(() => {
-      document.getElementById('opening-screen').style.display = 'none';
-      document.getElementById('interior-screen').classList.add('show');
-      document.getElementById('fade-overlay').classList.remove('fade');
-      buildPages();
-      setTimeout(startBookAnimation, 500);
-    }, 1500);
-  }
-}
-
-function buildPages() {
-  const book = document.getElementById('book');
-  categories.forEach((cat, i) => {
-    const page = document.createElement('div');
-    page.className = 'page';
-    page.id = `page-${i}`;
-    page.style.zIndex = categories.length - i;
-    page.innerHTML = `
-      <div class="page-front">
-        <div class="page-emoji">${cat.emoji}</div>
-        <div class="page-name">${cat.name}</div>
-        <div class="page-rule"></div>
-      </div>
-      <div class="page-back">
-        <div class="page-emoji">${cat.emoji}</div>
-        <div class="page-name">${cat.name}</div>
-        <div class="page-rule"></div>
-      </div>
-    `;
-    book.appendChild(page);
-  });
-}
-
-function startBookAnimation() {
-  const bc = document.getElementById('book-container');
-  bc.classList.add('show');
-  setTimeout(() => {
-    document.getElementById('book-cover').classList.add('open');
-  }, 300);
-  categories.forEach((_, i) => {
-    setTimeout(() => {
-      const p = document.getElementById(`page-${i}`);
-      if (p) p.classList.add('turned');
-    }, 900 + (i * 370));
-  });
-  setTimeout(() => {
-    bc.style.transition = 'opacity 0.6s ease';
-    bc.style.opacity = '0';
-    setTimeout(() => {
-      bc.style.display = 'none';
-      showCategoryGrid();
-    }, 600);
-  }, 900 + (categories.length * 370) + 500);
-}
-
-function showCategoryGrid() {
-  document.getElementById('category-grid').classList.add('show');
-  // Animate polaroids dropping in
-  [1,2,3,4].forEach((rowNum, ri) => {
-    const row = document.getElementById(`cat-row-${rowNum}`);
-    if (!row) return;
-    const cards = row.querySelectorAll('.cat-card');
-    cards.forEach((card, ci) => {
-      setTimeout(() => {
-        card.classList.add('appear');
-      }, ri * 200 + ci * 120);
-    });
-  });
-}
-
-function typeWriter(element, text, speed, callback) {
-  let i = 0;
-  element.innerHTML = '';
-  const cursor = document.createElement('span');
-  cursor.className = 'chalk-cursor';
-  element.appendChild(cursor);
-  function type() {
-    if (i < text.length) {
-      const char = document.createTextNode(text.charAt(i));
-      element.insertBefore(char, cursor);
-      spawnDust(element);
-      i++;
-      setTimeout(type, speed);
-    } else {
-      cursor.remove();
-      if (callback) callback();
+  holdInterval = setInterval(() => {
+    holdProgress = Math.min(holdProgress + 2, 100);
+    updateEmber();
+    if (holdProgress >= 100 && !holdDone) {
+      holdDone = true;
+      clearInterval(holdInterval);
+      clearInterval(sparkInterval);
+      triggerIgnition();
     }
-  }
-  type();
+  }, 30);
+
+  sparkInterval = setInterval(() => {
+    spawnSpark();
+  }, 80);
 }
 
-function spawnDust(element) {
-  const rect = element.getBoundingClientRect();
-  for (let d = 0; d < 2; d++) {
-    const dust = document.createElement('div');
-    dust.className = 'chalk-dust-p';
-    const size = Math.random() * 3 + 1;
-    const dx = (Math.random() - 0.5) * 14 + 'px';
-    const dy = (Math.random() - 0.5) * 14 + 'px';
-    dust.style.cssText = `width:${size}px;height:${size}px;left:${rect.right}px;top:${rect.top + Math.random()*rect.height}px;--dx:${dx};--dy:${dy};`;
-    document.body.appendChild(dust);
-    setTimeout(() => dust.remove(), 500);
+function endHold() {
+  if (holdDone) return;
+  clearInterval(holdInterval);
+  clearInterval(sparkInterval);
+  // Slowly decay
+  const decay = setInterval(() => {
+    holdProgress = Math.max(holdProgress - 3, 0);
+    updateEmber();
+    if (holdProgress <= 0) clearInterval(decay);
+  }, 50);
+}
+
+function updateEmber() {
+  const circle = document.getElementById('ember-circle');
+  const bg = document.getElementById('ember-bg');
+  const glowBg = document.getElementById('ember-glow-bg');
+  const ring = document.getElementById('ring-progress');
+  const hint = document.getElementById('ember-hint');
+
+  // Ring progress (dashoffset from 220 to 0)
+  const offset = 220 - (220 * holdProgress / 100);
+  ring.style.strokeDashoffset = offset;
+
+  const p = holdProgress;
+  if (p < 20) {
+    circle.style.boxShadow = `0 0 ${8 + p}px #FF4500, 0 0 ${p}px rgba(255,100,0,0.3)`;
+    circle.style.transform = 'scale(1)';
+    bg.className = 'ember-bg';
+    glowBg.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,80,0,0.02) 0%, transparent 70%)';
+  } else if (p < 40) {
+    circle.style.boxShadow = `0 0 ${20 + p/2}px #FF4500, 0 0 ${p}px rgba(255,100,0,0.5)`;
+    circle.style.transform = 'scale(1.05)';
+    bg.className = 'ember-bg reveal-1';
+    glowBg.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,80,0,0.08) 0%, transparent 70%)';
+    hint.textContent = 'keep holding...';
+  } else if (p < 60) {
+    circle.style.boxShadow = `0 0 35px #FF4500, 0 0 60px rgba(255,100,0,0.5)`;
+    circle.style.transform = 'scale(1.1)';
+    bg.className = 'ember-bg reveal-2';
+    glowBg.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,80,0,0.15) 0%, transparent 70%)';
+    hint.textContent = 'almost there...';
+  } else if (p < 80) {
+    circle.style.boxShadow = `0 0 50px #FF6B00, 0 0 100px rgba(255,120,0,0.6)`;
+    circle.style.transform = 'scale(1.15)';
+    bg.className = 'ember-bg reveal-3';
+    glowBg.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,100,0,0.25) 0%, transparent 65%)';
+    hint.textContent = '🔥 almost...';
+  } else {
+    circle.style.boxShadow = `0 0 70px #FF8C00, 0 0 140px rgba(255,140,0,0.7), 0 0 220px rgba(255,80,0,0.4)`;
+    circle.style.transform = 'scale(1.2)';
+    bg.className = 'ember-bg reveal-4';
+    glowBg.style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,120,0,0.4) 0%, transparent 65%)';
+    hint.textContent = '🔥🔥🔥';
   }
 }
 
-function openChalk(catName, catEmoji) {
-  const content = document.getElementById('board-content');
-  content.innerHTML = `
-    <button class="chalk-back-btn" onclick="closeChalk()">← back</button>
-    <div class="board-title">${catEmoji} ${catName}</div>
-    <div class="board-rule"></div>
-  `;
-  menuItems.forEach((item, i) => {
-    const el = document.createElement('div');
-    el.className = 'board-item';
-    el.id = `board-item-${i}`;
-    el.innerHTML = `
-      <div class="board-item-top">
-        <div class="board-item-left">
-          <span class="board-item-emoji">${item.emoji}</span>
-          <span class="chalk-writing" id="board-name-${i}"></span>
-        </div>
-        <div class="board-price" id="board-price-${i}" style="opacity:0">₹${item.price}</div>
-      </div>
-      <div class="board-desc" id="board-desc-${i}" style="opacity:0">${item.desc}</div>
-      <button class="board-order-btn" id="board-btn-${i}" style="opacity:0" onclick="placeOrder('${item.name}')">ORDER THIS</button>
-    `;
-    content.appendChild(el);
-    setTimeout(() => {
-      el.classList.add('show-item');
-      const nameEl = document.getElementById(`board-name-${i}`);
-      typeWriter(nameEl, item.name, 45, () => {
-        document.getElementById(`board-price-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
-        setTimeout(() => {
-          document.getElementById(`board-desc-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
-          setTimeout(() => {
-            document.getElementById(`board-btn-${i}`).style.cssText = 'opacity:1;transition:opacity 0.3s ease';
-          }, 200);
-        }, 200);
-      });
-    }, 300 + (i * 900));
+function spawnSpark() {
+  const core = document.getElementById('ember-core');
+  const rect = core.getBoundingClientRect();
+  const spark = document.createElement('div');
+  spark.className = 'spark';
+  const angle = Math.random() * Math.PI * 2;
+  const dist = 40 + Math.random() * 60;
+  const sx = Math.cos(angle) * dist + 'px';
+  const sy = (Math.sin(angle) * dist - 20) + 'px';
+  spark.style.cssText = `left:${rect.left + rect.width/2}px;top:${rect.top + rect.height/2}px;--sx:${sx};--sy:${sy};background:${Math.random() > 0.5 ? '#FFD700' : '#FF6B00'};`;
+  document.body.appendChild(spark);
+  setTimeout(() => spark.remove(), 800);
+}
+
+function triggerIgnition() {
+  if (navigator.vibrate) navigator.vibrate([40, 20, 80, 20, 120]);
+  const bg = document.getElementById('ember-bg');
+  bg.className = 'ember-bg reveal-5';
+  document.getElementById('ember-glow-bg').style.background = 'radial-gradient(ellipse at 50% 50%, rgba(255,150,50,0.6) 0%, transparent 70%)';
+  document.getElementById('ember-hint').textContent = '';
+
+  setTimeout(() => {
+    document.getElementById('fade-overlay').style.transition = 'opacity 0.7s ease';
+    document.getElementById('fade-overlay').classList.add('fade');
+  }, 500);
+
+  setTimeout(() => {
+    document.getElementById('ember-screen').style.display = 'none';
+    document.getElementById('menu-screen').classList.add('show');
+    document.getElementById('fade-overlay').classList.remove('fade');
+    buildVinyl();
+  }, 1300);
+}
+
+// ===== VINYL SPIN =====
+let vinylRotation = 0;
+let lastAngle = null;
+let isSpinning = false;
+let selectedCatIndex = -1;
+let spinVelocity = 0;
+let spinMomentum = null;
+
+function buildVinyl() {
+  const vinyl = document.getElementById('vinyl');
+  categories.forEach((cat, i) => {
+    const segment = document.createElement('div');
+    segment.className = 'cat-segment';
+    const angle = (i / categories.length) * 360;
+    segment.style.cssText = `position:absolute;top:50%;left:50%;width:110px;height:1px;transform-origin:left center;transform:rotate(${angle}deg);`;
+    segment.innerHTML = `<div style="position:absolute;left:70px;top:50%;transform:translateY(-50%);font-family:'Special Elite',cursive;font-size:8px;color:rgba(255,255,255,0.35);white-space:nowrap;letter-spacing:0.5px;">${cat.emoji} ${cat.name}</div>`;
+    vinyl.appendChild(segment);
   });
-  document.getElementById('chalk-screen').classList.add('show');
 }
 
-function closeChalk() {
-  document.getElementById('chalk-screen').classList.remove('show');
+function getAngle(e, el) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const touch = e.touches ? e.touches[0] : e;
+  return Math.atan2(touch.clientY - cy, touch.clientX - cx) * 180 / Math.PI;
 }
 
-function placeOrder(name) {
-  document.getElementById('order-popup').classList.add('show');
+function startSpin(e) {
+  e.preventDefault();
+  isSpinning = true;
+  lastAngle = getAngle(e, document.getElementById('vinyl'));
+  clearInterval(spinMomentum);
+}
+
+function doSpin(e) {
+  e.preventDefault();
+  if (!isSpinning) return;
+  const angle = getAngle(e, document.getElementById('vinyl'));
+  let delta = angle - lastAngle;
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+  spinVelocity = delta;
+  vinylRotation += delta;
+  lastAngle = angle;
+  document.getElementById('vinyl').style.transform = `rotate(${vinylRotation}deg)`;
+  updateSelectedCategory();
+}
+
+function endSpin() {
+  if (!isSpinning) return;
+  isSpinning = false;
+  // Momentum
+  spinMomentum = setInterval(() => {
+    if (Math.abs(spinVelocity) < 0.3) { clearInterval(spinMomentum); return; }
+    spinVelocity *= 0.95;
+    vinylRotation += spinVelocity;
+    document.getElementById('vinyl').style.transform = `rotate(${vinylRotation}deg)`;
+    updateSelectedCategory();
+  }, 16);
+}
+
+function updateSelectedCategory() {
+  // Needle points at ~60deg from top
+  const needleAngle = 60;
+  const normalised = (((-vinylRotation + needleAngle) % 360) + 360) % 360;
+  const segmentSize = 360 / categories.length;
+  const idx = Math.floor(normalised / segmentSize) % categories.length;
+
+  if (idx !== selectedCatIndex) {
+    selectedCatIndex = idx;
+    const cat = categories[idx];
+    document.getElementById('selected-emoji').textContent = cat.emoji;
+    document.getElementById('selected-name').textContent = cat.name;
+    document.getElementById('enter-category-btn').style.display = 'block';
+    if (navigator.vibrate) navigator.vibrate(15);
+  }
+}
+
+// ===== PRICE TAGS =====
+function openTags() {
+  if (selectedCatIndex < 0) return;
+  const cat = categories[selectedCatIndex];
+  document.getElementById('tag-screen-title').textContent = `${cat.emoji} ${cat.name}`;
+  const container = document.getElementById('tags-container');
+  container.innerHTML = '';
+
+  const rots = [2, -1.5, 1];
+  menuItems.forEach((item, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'price-tag';
+    tag.style.setProperty('--rot', rots[i] + 'deg');
+    tag.innerHTML = `
+      <div class="tag-string"></div>
+      <div class="tag-hole"></div>
+      <div class="tag-top">
+        <div class="tag-emoji-name">
+          <span class="tag-emoji">${item.emoji}</span>
+          <span class="tag-name">${item.name}</span>
+        </div>
+        <div class="tag-price">₹${item.price}</div>
+      </div>
+      <div class="tag-desc">${item.desc}</div>
+      <div class="tag-tear-line"></div>
+      <button class="tag-order-btn" onclick="tearTag(this, '${item.name}')">✂ TEAR TO ORDER</button>
+    `;
+    container.appendChild(tag);
+    setTimeout(() => tag.classList.add('swing-in'), 50 + i * 180);
+  });
+
+  document.getElementById('tag-screen').classList.add('show');
+}
+
+function tearTag(btn, name) {
+  const tag = btn.closest('.price-tag');
+  if (navigator.vibrate) navigator.vibrate([30, 20, 60]);
+  tag.classList.add('tearing');
+  setTimeout(() => {
+    document.getElementById('order-popup').classList.add('show');
+  }, 400);
+}
+
+function closeTags() {
+  document.getElementById('tag-screen').classList.remove('show');
+  setTimeout(() => {
+    document.getElementById('tags-container').innerHTML = '';
+  }, 450);
 }
 
 function closePopup() {
